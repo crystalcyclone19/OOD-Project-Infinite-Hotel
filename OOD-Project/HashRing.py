@@ -1,7 +1,5 @@
 import hashlib
-
-class AVLTree:
-    pass
+import AVLTree
 
 class Customer:
     def __init__(self, c: int, s: int, guest_hash: int, room_no: int, node_id: int):
@@ -13,18 +11,18 @@ class Customer:
 
 class HashHelper:
     @staticmethod
-    def hash_function(self, key_val: str):
+    def hash_function(key_val: str):
         hash_bytes = hashlib.sha256(key_val.encode('utf-8')).digest()
         hash_val = int.from_bytes(hash_bytes[:8], byteorder='big')
         return hash_val
     
     @staticmethod
-    def get_node_hash(self, node_id: int, j: int):
+    def get_node_hash(node_id: int, j: int):
         text = f"node:{node_id}:{j}"
         return HashHelper.hash_function(text)
 
     @staticmethod
-    def get_guest_hash(self, c: int, s: int):
+    def get_guest_hash(c: int, s: int):
         text = f"guest:{c}:{s}"
         return HashHelper.hash_function(text)
     
