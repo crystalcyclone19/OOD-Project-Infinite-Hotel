@@ -14,7 +14,7 @@ class Customer:
         return ((a + b) * (a + b + 1)) // 2 + b + 1
 
 class HotelSystem:
-    def __int__(self, hash_ring):
+    def __init__(self, hash_ring):
         self.building_tree = AVLTree()
         self.customer_tree = AVLTree()
         self.ring = hash_ring
@@ -27,21 +27,21 @@ class HotelSystem:
             self._get_all_customers(node.right, cust_list)
 
     def add_customer(self, c: int, s: int) -> bool:
-        #check for dupes
+        # check for dupes
         guest_hash = HashHelper.get_guest_hash(c, s)
         if self.customer_tree.search(guest_hash) is not None:
             return False
 
-        #create customer
+        # create customer
         new_customer = Customer(c, s)
 
-        #ask ring for building and assigning the building to cust.node_id
+        # ask ring for building and assigning the building to cust.node_id
         new_customer.node_id = self.ring.get_node_id(new_customer.hash)
 
         self.customer_tree.add(new_customer.hash)
 
-        #new dict key
-        target_node = self.customer_tree.search(new_customer.guest_hash)
+        # new dict key
+        target_node = self.customer_tree.search(new_customer.hash)
         target_node.data["customer_obj"] = new_customer
 
         return True
