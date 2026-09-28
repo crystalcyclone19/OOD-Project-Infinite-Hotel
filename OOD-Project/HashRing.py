@@ -1,14 +1,6 @@
 import hashlib
 import AVLTree
 
-class Customer:
-    def __init__(self, c: int, s: int, guest_hash: int, room_no: int, node_id: int):
-        self.c = c
-        self.s = s
-        self.guest_hash = guest_hash
-        self.room_no = room_no
-        self.node_id = node_id
-
 class HashHelper:
     @staticmethod
     def hash_function(key_val: str):
@@ -76,4 +68,3 @@ class HashRing:
             return left_result if left_result is not None else node.data
         else:
             return self._find_ceiling(node.right, data)
-
