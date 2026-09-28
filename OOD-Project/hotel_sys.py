@@ -9,6 +9,7 @@ class Customer:
         self.node_id = None
         
     def calculate_room_no(self, c: int, s: int) -> int:
+        # cantor pairing
         a = c - 1
         b = s - 1
         return ((a + b) * (a + b + 1)) // 2 + b + 1
@@ -19,17 +20,20 @@ class HotelSystem:
         self.customer_tree = AVLTree()
         self.ring = hash_ring
 
-    def _get_all_customers(self, node, cust_list):
+    def _get_all_customers(self, node, customers_list):
+        # in-order traversal
         if node is not None:
-            self._get_all_customers(node.left, cust_list)
+            self._get_all_customers(node.left, customers_list)
+            # extract the customer object
             if "customer_obj" in node.data:
-                cust_list.append(node.data["customer_obj"])
-            self._get_all_customers(node.right, cust_list)
+                customers_list.append(node.data["customer_obj"])
+            self._get_all_customers(node.right, customers_list)
 
     def add_customer(self, c: int, s: int) -> bool:
         # check for dupes
         guest_hash = HashHelper.get_guest_hash(c, s)
         if self.customer_tree.search(guest_hash) is not None:
+            print(f"[INVALID] add_customer failed: Guest {(c, s)} already exists in the system.")
             return False
 
         # create customer
@@ -38,35 +42,43 @@ class HotelSystem:
         # ask ring for building and assigning the building to cust.node_id
         new_customer.node_id = self.ring.get_node_id(new_customer.hash)
 
+        # add hash
         self.customer_tree.add(new_customer.hash)
 
-        # new dict key
+        # add customer_object
         target_node = self.customer_tree.search(new_customer.hash)
         target_node.data["customer_obj"] = new_customer
 
         return True
 
-    def add_group_customer(self, c: int, s_start: int, n: int) -> bool:
+    def add_group_customer(self, c: int, s: int, n: int) -> bool:
+        # invalid group size
         if n <= 0: 
+            print(f"[INVALID] add_group_customer failed: Invalid group size (n={n}).")
             return False
 
         for i in range(n):
             # calculate the hash for each guest to check for conflicts
-                check_hash = HashHelper.get_guest_hash(c, s_start + i)
+                check_hash = HashHelper.get_guest_hash(c, s + i)
                 if self.customer_tree.search(check_hash) is not None:
+                    print(f"[INVALID] add_group_customer failed: Conflict at guest {(c, s + i)}.")
                     return False
 
+        # adding process
         for i in range(n):
-            self.add_customer(c, s_start + i)
+            self.add_customer(c, s + i)
 
         return True
 
     def remove_customer(self, c: int, s: int) -> bool:
         target_hash = HashHelper.get_guest_hash(c, s)
 
+        # check existance
         if self.customer_tree.search(target_hash) is None:
+            print(f"[INVALID] remove_customer failed: Guest {(c, s)} not found.")
             return False
 
+        # delete
         self.customer_tree.remove(target_hash)
         return True
 
@@ -75,21 +87,26 @@ class HotelSystem:
         target_customer = self.customer_tree.search(target_hash)
 
         if target_customer is None:
+            print(f"[INVALID] search_customer_by_id: Guest {(c, s)} not found in system.")
             return None
 
         return target_customer.data["customer_obj"]
 
     def search_customer_by_room(self, node_id: int, room_no: int):
+        # get all customers
         all_customers = []
         self._get_all_customers(self.customer_tree.root, all_customers)
 
+        # looping O(K)
         for customer in all_customers:
             if customer.node_id == node_id and customer.room_no == room_no:
                 return customer
 
+        print(f"[INVALID] search_customer_by_room: Building {node_id}, Room {room_no} is currently empty.")
         return None
 
     def get_customers(self) -> dict:
+        # get all customers
         all_customers = [] 
         self._get_all_customers(self.customer_tree.root, all_customers)
 
