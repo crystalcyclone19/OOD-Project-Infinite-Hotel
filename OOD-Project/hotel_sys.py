@@ -59,10 +59,10 @@ class HotelSystem:
 
         for i in range(n):
             # calculate the hash for each guest to check for conflicts
-                check_hash = HashHelper.get_guest_hash(c, s + i)
-                if self.customer_tree.search(check_hash) is not None:
-                    print(f"[INVALID] add_group_customer failed: Conflict at guest {(c, s + i)}.")
-                    return False
+            check_hash = HashHelper.get_guest_hash(c, s + i)
+            if self.customer_tree.search(check_hash) is not None:
+                print(f"[INVALID] add_group_customer failed: Conflict at guest {(c, s + i)}.")
+                return False
 
         # adding process
         for i in range(n):
