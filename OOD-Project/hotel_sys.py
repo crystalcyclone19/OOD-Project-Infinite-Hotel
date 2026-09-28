@@ -117,3 +117,46 @@ class HotelSystem:
             result_dict[str(customer.hash)] = str(customer.node_id)
 
         return result_dict
+        
+    def add_building(self, node_id: int):
+        if self.building_tree.search(node_id) is not None:
+            print(f"[INVALID] add_building failed: Building {node_id} already exists.")
+            return None
+
+        self.building_tree.add(node_id)
+        self.ring.add_node(node_id)
+
+        all_customers = []
+        self._get_all_customers(self.customer_tree.root, all_customers)
+
+        moves = []
+        for customer in all_customers:
+            new_node_id = self.ring.get_node_id(customer.hash)
+            if new_node_id != customer.node_id:
+                moves.append((customer.id, customer.node_id, new_node_id, customer.room_no))
+                customer.node_id = new_node_id
+        return moves
+
+    def remove_building(self, node_id: int):
+        if self.building_tree.search(node_id) is None:
+            print(f"[INVALID] remove_building failed: Building {node_id} not found.")
+            return None
+
+        root = self.building_tree.root
+        if root.left is None and root.right is None:  # only one building in the tree
+            print("[INVALID] remove_building failed: cannot remove the last building.")
+            return None
+
+        self.building_tree.remove(node_id)
+        self.ring.remove_node(node_id)
+
+        all_customers = []
+        self._get_all_customers(self.customer_tree.root, all_customers)
+
+        moves = []
+        for customer in all_customers:
+            new_node_id = self.ring.get_node_id(customer.hash)
+            if new_node_id != customer.node_id:
+                moves.append((customer.id, customer.node_id, new_node_id, customer.room_no))
+                customer.node_id = new_node_id
+        return moves
