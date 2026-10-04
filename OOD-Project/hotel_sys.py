@@ -32,7 +32,8 @@ class HotelSystem:
     def add_customer(self, c: int, s: int) -> bool:
         # check for dupes
         guest_hash = HashHelper.get_guest_hash(c, s)
-        if self.customer_tree.search(guest_hash) is not None:
+        search_key = (guest_hash, c, s)
+        if self.customer_tree.search(search_key) is not None:
             print(f"[INVALID] add_customer failed: Guest {(c, s)} already exists in the system.")
             return False
 
@@ -43,7 +44,11 @@ class HotelSystem:
         new_customer.node_id = self.ring.get_node_id(new_customer.hash)
 
         # add hash
-        self.customer_tree.add(new_customer)
+        self.customer_tree.add((new_customer.hash, c, s))
+
+        # add customer_object
+        target_node = self.customer_tree.search((new_customer.hash, c, s))
+        target_node.data["customer_obj"] = new_customer
 
         return True
 
@@ -56,7 +61,9 @@ class HotelSystem:
         for i in range(n):
             # calculate the hash for each guest to check for conflicts
             check_hash = HashHelper.get_guest_hash(c, s + i)
-            if self.customer_tree.search(check_hash) is not None:
+            search_key = (check_hash, c, s + i)
+            
+            if self.customer_tree.search(search_key) is not None:
                 print(f"[INVALID] add_group_customer failed: Conflict at guest {(c, s + i)}.")
                 return False
 
@@ -68,19 +75,22 @@ class HotelSystem:
 
     def remove_customer(self, c: int, s: int) -> bool:
         target_hash = HashHelper.get_guest_hash(c, s)
+        search_key = (target_hash, c, s)
 
         # check existance
-        if self.customer_tree.search(target_hash) is None:
+        if self.customer_tree.search(search_key) is None:
             print(f"[INVALID] remove_customer failed: Guest {(c, s)} not found.")
             return False
 
         # delete
-        self.customer_tree.remove(target_hash)
+        self.customer_tree.remove(search_key)
         return True
 
     def search_customer_by_id(self, c: int, s: int):
         target_hash = HashHelper.get_guest_hash(c, s)
-        target_customer = self.customer_tree.search(target_hash)
+        search_key = (target_hash, c, s)
+
+        target_customer = self.customer_tree.search(search_key)
 
         if target_customer is None:
             print(f"[INVALID] search_customer_by_id: Guest {(c, s)} not found in system.")
