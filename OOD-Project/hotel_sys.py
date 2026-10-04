@@ -1,5 +1,5 @@
-from AVLTree import AVLTree
-from HashRing import HashHelper
+from AVLTree import AVLClassTree, AVLNormalTree
+from HashRing import HashHelper, HashRing
 
 class Customer:
     def __init__(self, c: int, s: int):
@@ -15,18 +15,18 @@ class Customer:
         return ((a + b) * (a + b + 1)) // 2 + b + 1
 
 class HotelSystem:
-    def __init__(self, hash_ring):
-        self.building_tree = AVLTree()
-        self.customer_tree = AVLTree()
-        self.ring = hash_ring
+    def __init__(self, number_of_virtual: int, salt: str):
+        self.building_tree = AVLNormalTree()
+        self.customer_tree = AVLClassTree()
+        self.ring = HashRing(number_of_virtual, salt)
 
     def _get_all_customers(self, node, customers_list):
         # in-order traversal
         if node is not None:
             self._get_all_customers(node.left, customers_list)
             # extract the customer object
-            if "customer_obj" in node.data:
-                customers_list.append(node.data["customer_obj"])
+            if node.data is not None:
+                customers_list.append(node.data)
             self._get_all_customers(node.right, customers_list)
 
     def add_customer(self, c: int, s: int) -> bool:
@@ -43,11 +43,7 @@ class HotelSystem:
         new_customer.node_id = self.ring.get_node_id(new_customer.hash)
 
         # add hash
-        self.customer_tree.add(new_customer.hash)
-
-        # add customer_object
-        target_node = self.customer_tree.search(new_customer.hash)
-        target_node.data["customer_obj"] = new_customer
+        self.customer_tree.add(new_customer)
 
         return True
 
@@ -90,7 +86,7 @@ class HotelSystem:
             print(f"[INVALID] search_customer_by_id: Guest {(c, s)} not found in system.")
             return None
 
-        return target_customer.data["customer_obj"]
+        return target_customer.data
 
     def search_customer_by_room(self, node_id: int, room_no: int):
         # get all customers
