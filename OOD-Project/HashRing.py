@@ -75,7 +75,7 @@ class HashRing:
 
         if node_data == data:  
             return node.data   
-
+            
         if data < node_data:  
             left_result = self._find_ceiling(node.left, data)
             return left_result if left_result is not None else node.data 
