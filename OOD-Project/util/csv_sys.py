@@ -40,3 +40,10 @@ def create_node_csv(file_name: str, buildings_with_rooms:list):
             node_id = building_with_room.building_id
             room_no = building_with_room.room_no
             writer.writerow([i+1,node_id,room_no])
+
+
+def count_line_csv(file_name: str) -> int:
+    with open(f"CSV/{file_name}","r",newline="",encoding="utf-8") as f:
+        reader = csv.reader(f)
+        next(reader,None)
+        return len(list(reader))

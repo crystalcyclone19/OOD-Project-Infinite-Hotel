@@ -2,6 +2,7 @@ from hotel_sys import HotelSystem
 from util.csv_sys import (create_customer_csv,
                           create_moved_customer_csv,
                           create_node_csv,
+                          count_line_csv,
                          )
 
 V = 1  
@@ -46,6 +47,9 @@ print(f"Search by Id: {hotel.search_customer_by_id(1,1)}")
 
 # Search Customer By Id 
 print(f"Search by building_id and room: {hotel.search_customer_by_room(3,3)}")
+
+# Count line
+print(f"Total lines:{count_line_csv("moved_customers_from_add_1.csv")}")
 
 
 
