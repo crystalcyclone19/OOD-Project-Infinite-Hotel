@@ -1,7 +1,8 @@
 from AVLTree import AVLClassTree, AVLNormalTree
-from HashRing import HashHelper, HashRing
+from HashRing import HashHelper, HashRing, HashModN
 from pydantic import BaseModel
 
+import time
 
 class Customer:
     def __init__(self, c: int, s: int):
@@ -30,8 +31,12 @@ class BuildingWithRoom(BaseModel):
 
 
 class HotelSystem:
-    def __init__(self, number_of_virtual: int, building_salt: str,customer_salt: str):
-        self.ring = HashRing(number_of_virtual, building_salt)
+    def __init__(self, number_of_virtual: int, building_salt: str,customer_salt: str, hash_type: str = 'consistent'):
+        if hash_type == "consistent":
+            self.ring = HashRing(number_of_virtual, building_salt)
+        elif hash_type == "mod_n":
+            self.ring = HashModN()
+        
         self.building_tree = AVLNormalTree()
         self.customer_tree = AVLClassTree()
         self.customer_salt = customer_salt
@@ -161,6 +166,7 @@ class HotelSystem:
                                            new_node_id=new_node_id,
                                           ))
                 customer.node_id = new_node_id
+
         return moves
     
 
