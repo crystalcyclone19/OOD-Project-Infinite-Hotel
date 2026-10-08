@@ -97,3 +97,5 @@ class HashModN:
     def get_node_id(self, guest_hash: int):
         node_index = guest_hash % len(self.building_list)
         return self.building_list[node_index]
+
+

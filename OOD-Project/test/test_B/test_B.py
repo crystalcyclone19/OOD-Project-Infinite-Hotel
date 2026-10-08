@@ -10,9 +10,12 @@ PROJECT_ROOT = os.path.dirname(
 if PROJECT_ROOT not in sys.path:
     sys.path.append(PROJECT_ROOT)
 
-from generate_mock_data_csv import generate_mock_data
+# from generate_mock_data_csv import generate_mock_data
+from .generate_mock_data_csv import generate_mock_data # Claude told me : )
 from hotel_sys import HotelSystem
-from load_data_to_system import load_data_to_system
+# from load_data_to_system import load_data_to_system
+from .load_data_to_system import load_data_to_system # Claude told me : )
+
 
 import time
 import numpy as np

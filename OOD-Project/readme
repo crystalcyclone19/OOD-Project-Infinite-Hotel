@@ -1,0 +1,17 @@
+Command
+
+
+7.2 Test 
+ Test A:
+     Command: python -m test.test_A 
+     Out put: .png in graph folder,Terminal shows state of process
+     Info: Expect 4 pictures: (1)Test_A_assing_search_ordering_varinace.png, 
+                             (2)Test_A_assing_search_ordering.png,
+                             (3)Test_A_memory_variance.png
+                             (4)Test_A_memory.png
+ Test B:
+     Command: python -m test.test_B.test_B
+     Out put: Termianl shows state of process and the results, Window shows graphs
+ Test C:
+     Command: python -m test.test_C
+     Out put: Termianl shows state of process and the results, Window shows graphs

@@ -81,6 +81,7 @@ class HotelSystem:
 
     def add_group_customer(self, c: int, s: int, n: int) -> bool:
         # invalid group size
+        
         if n <= 0: 
             print(f"[INVALID] add_group_customer failed: Invalid group size (n={n}).")
             return False
@@ -199,15 +200,18 @@ class HotelSystem:
         return moves
 
     def get_buildings_with_rooms(self) -> list:
-        
+
         all_customers = []
-        self._get_all_customers(self.customer_tree.root,all_customers)
+        self._get_all_customers(self.customer_tree.root, all_customers)
 
         buildings = []
         for customer in all_customers:
             buildings.append(BuildingWithRoom(
-                                            building_id=customer.node_id,
-                                            room_no= customer.room_no
-                                            ))
+                building_id=customer.node_id,
+                room_no=customer.room_no
+            ))
+
+        # sort by node_id ascending, then room_no ascending (numeric)
+        buildings.sort(key=lambda b: (b.building_id, b.room_no))
         return buildings
     
