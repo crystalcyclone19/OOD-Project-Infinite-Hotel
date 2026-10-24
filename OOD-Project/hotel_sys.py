@@ -27,9 +27,6 @@ class BuildingWithRoom(BaseModel):
       
 
 
-
-
-
 class HotelSystem:
     def __init__(self, number_of_virtual: int, building_salt: str,customer_salt: str, hash_type: str = 'consistent'):
         if hash_type == "consistent":
