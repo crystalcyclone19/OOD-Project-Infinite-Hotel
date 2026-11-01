@@ -72,6 +72,9 @@ class HashRing:
             return None
 
         node_data = self.data._get_key(node) #function _get_key in class AVLTree
+        
+        if isinstance(node_data, tuple):
+            node_data = node_data[0] 
 
         if node_data == data:  
             return node.data   

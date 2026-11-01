@@ -50,57 +50,80 @@ class AVLTree(ABC):
             self.root = root
 
         @abstractmethod
-        def _extract_key(self, item):
+        def _extract_key(self, item) -> tuple:
             pass
         
-        def _get_key(self, node):
+        def _get_key(self, node) -> tuple | None:
             if node is None:
                 return None
             return self._extract_key(node.data)
+        
+        # def __extract_sub_keys(self):
+        #     if hasattr(root.data, "id"):
+        #         return root.data.id
+        #     elif hasattr(root.data, "node_id") and hasattr(root, "v_index"):
+        #         return (root.data.node_id, root.data.v_index)
+        #     else:
+        #         raise ValueError("Invalid sub_keys parameter")
 
-        def search(self, key, root=None):
+        def search(self, keys, root=None):
             if root is None:
                 root = self.root
-            target_data = self._extract_key(key)
+            target_data = self._extract_key(keys)
+            
             while root is not None:
-                node_key = self._get_key(root)
-                if target_data == node_key:
+                node_keys = self._get_key(root)
+                
+                if node_keys is None or len(target_data) != len(node_keys):
+                    raise ValueError(f"Mismatch key size | target {target_data} vs node {node_keys}")
+                
+                if target_data == node_keys:
                     return root.data
-                root = root.left if target_data < node_key else root.right
+                elif target_data < node_keys:
+                    root = root.left
+                else:
+                    root = root.right
+
             return None
         
-        def add(self, key = None):
-            if key is None: raise ValueError()
-            self.root = self.__add(key, self.root)
+        def add(self, keys = None):
+            if keys is None: raise ValueError("Empty key")
+            self.root = self.__add(keys, self.root)
     
-        def remove(self, key):
-            if key is None: raise ValueError()
-            self.root = self.__remove(key, self.root)
+        def remove(self, keys, sub_keys=None):
+            if keys is None: raise ValueError("Empty key")
+            self.root = self.__remove(keys, self.root)
 
-        def __add(self, key, root):
+        def __add(self, keys, root):
             if root is None:
-                return AVLNode(key)
+                return AVLNode(keys)
 
-            new_data = self._extract_key(key)
-            if new_data < self._get_key(root):
-                root.left = self.__add(key, root.left)
+            new_data = self._extract_key(keys)
+            node_keys = self._get_key(root)
+            
+            if node_keys is None or len(new_data) != len(node_keys):
+                raise ValueError(f"Mismatch key size | target {new_data} vs node {node_keys}")
+            
+            if new_data == node_keys:
+                raise ValueError("Already exist node")
+            elif new_data < node_keys:
+                root.left = self.__add(keys, root.left)
             else:
-                root.right = self.__add(key, root.right)
+                root.right = self.__add(keys, root.right)
 
             return self.__rebalance(root)
 
-        def __remove(self, key, root):
+        def __remove(self, keys, root):
             if root is None:
                 return None
 
-            root_key = self._get_key(root)
-            target_data = self._extract_key(key)
+            target_data = self._extract_key(keys)
+            node_keys = self._get_key(root)
+            
+            if node_keys is None or len(target_data) != len(node_keys):
+                raise ValueError(f"Mismatch key size | target {target_data} vs node {node_keys}")
 
-            if target_data < root_key:
-                root.left = self.__remove(key, root.left)
-            elif target_data > root_key:
-                root.right = self.__remove(key, root.right)
-            else:
+            if target_data == node_keys:
                 if root.left is None:
                     return root.right
                 if root.right is None:
@@ -109,7 +132,11 @@ class AVLTree(ABC):
                 s = self.__getMinNode(root.right)
                 root.data = s.data
                 root.right = self.__remove(s.data, root.right)
-
+            elif target_data < node_keys:
+                root.left = self.__remove(keys, root.left)
+            else:
+                root.right = self.__remove(keys, root.right)
+                    
             return self.__rebalance(root)
 
         def __rebalance(self, x):
@@ -165,12 +192,24 @@ class AVLTree(ABC):
 class AVLNormalTree(AVLTree):
 
     def _extract_key(self, item):
-        return item
+        return item if isinstance(item, tuple) else (item,)
 
 class AVLClassTree(AVLTree):
 
     def _extract_key(self, item):
-        return item.hash if hasattr(item, 'hash') else item
+        
+        param = tuple()
+        
+        if hasattr(item, "hash"):
+            param = param + (item.hash,)
+        
+        if hasattr(item, "id"):
+            param = param + item.id
+        elif hasattr(item, "node_id") and hasattr(item, "v_index"):
+            param = param + (item.node_id, item.v_index)
+            
+        return param if param else \
+            item if isinstance(item, tuple) else (item,)
     
 def print_tree(node, level=0, prefix="Root: "):
     """ฟังก์ชันเสริมสำหรับพิมพ์โครงสร้าง AVL Tree ออกมาดูทางหน้าจอ"""
