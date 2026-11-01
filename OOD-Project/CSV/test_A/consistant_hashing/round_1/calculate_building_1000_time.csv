@@ -1,0 +1,10 @@
+# test: "A"
+# name: "calculate_building_1000_time"
+# N: 10
+# V: 32
+# C(max): 10
+# round: 1
+# salt: "0"
+# method: "consistant_hashing"
+round,time usage(us)
+1,14.86280000062834

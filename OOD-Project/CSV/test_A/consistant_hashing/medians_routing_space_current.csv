@@ -1,0 +1,11 @@
+# test: "A"
+# name: "medians_routing_space_current"
+# N: 10
+# V: 32
+# number_of_round: 3
+# min: 0.07509994506835938
+# max: 0.07532882690429688
+# salt: ["0", "1", "2"]
+# method: "consistant_hashing"
+total_round,memory usage(MiB)
+3,0.07522201538085938
