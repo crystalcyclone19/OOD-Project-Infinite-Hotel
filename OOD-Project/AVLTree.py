@@ -1,3 +1,4 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
 
 class AVLNode:
@@ -90,7 +91,7 @@ class AVLTree(ABC):
             if keys is None: raise ValueError("Empty key")
             self.root = self.__add(keys, self.root)
     
-        def remove(self, keys, sub_keys=None):
+        def remove(self, keys = None):
             if keys is None: raise ValueError("Empty key")
             self.root = self.__remove(keys, self.root)
 

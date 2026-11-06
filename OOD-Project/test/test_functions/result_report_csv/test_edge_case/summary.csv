@@ -1,0 +1,10 @@
+command,before_count,after_count
+add_building(1),7,7
+remove_building(999),7,7
+remove_building(1),1,1
+"add_customer(2, 3)",6,6
+"remove_customer(99, 99)",6,6
+"search_customer_by_id(99, 99) + search_customer_by_room(999, 123456)",6,6
+get_customers() + get_buildings_with_rooms() + add_building(777) + remove_building(1),2,2
+"add_group_customer(2, 2, 3)",6,6
+"add_group_customer(5, 1, 0) + add_group_customer(5, 1, -2)",6,6

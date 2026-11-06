@@ -1,0 +1,2 @@
+no.,test_detail,n_c,n_s,n_created,n_existed,n_missing,passed
+1,add c_max*n_max customers and check room conflict,100,1000,100000,100000,0,True

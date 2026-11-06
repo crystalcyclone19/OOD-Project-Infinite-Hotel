@@ -23,3 +23,7 @@ Command
  Test C:
      Command: python -m test.test_C
      Out put: Termianl shows state of process and the results, Window shows graphs
+    
+Test Function and Edge Cases:
+     Command: python -m test.test_all_functions
+     Out put: Termianl shows state of process and the results. CSV files was located at test/test_functions/result_report_csv

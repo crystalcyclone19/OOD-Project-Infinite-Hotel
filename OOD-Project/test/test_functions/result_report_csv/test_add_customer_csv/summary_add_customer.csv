@@ -1,0 +1,7 @@
+no.,test_detail,n_before,n_after,n_changed,n_expected,passed
+1,add single customer with difference channel,20,23,3,3,True
+2,add single customer with same channel,20,23,3,3,True
+3,add multiple customers with difference channel,20,35,15,15,True
+4,add multiple customers with same channel,20,35,15,15,True
+5,add repeated single customer,20,20,0,0,True
+6,add repeated multiple customers,31,31,0,0,True
