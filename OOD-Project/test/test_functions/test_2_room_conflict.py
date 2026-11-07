@@ -137,7 +137,7 @@ class TestRoomConflict(unittest.TestCase):
         
         error_msg = ""
         
-        error_msg += f"\n{" Repeated Room No. List ":=^50}\n"
+        error_msg += f"\n{' Repeated Room No. List ':=^50}\n"
         
         count = 1
         for b, r in repeated_rooms:
@@ -204,5 +204,3 @@ class TestRoomConflict(unittest.TestCase):
     
 if __name__ == "__main__":
     unittest.main()
-
-

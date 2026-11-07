@@ -15,7 +15,7 @@
 
 ## 🛠 ข้อกำหนดเบื้องต้นและการติดตั้ง
 
-1. **Python:** ภาษา Python เวอร์ชัน 3.8 ขึ้นไป
+1. **Python:** ภาษา Python เวอร์ชัน 3.9 ขึ้นไป
 2. **การติดตั้ง Dependencies:** (รันที่โฟลเดอร์ `OOD-Project-Infinite-Hotel/`)
    ```bash
    pip install -r requirements.txt
