@@ -1,0 +1,9 @@
+# test: "A"
+# name: "medians_calculate_building_1000_time_3_rounds"
+# N: 10
+# V: 32
+# C(max): 10
+# salt: ["0", "1", "2"]
+# method: "consistant_hashing"
+total_round,medians(us)
+3,14.86280000062834

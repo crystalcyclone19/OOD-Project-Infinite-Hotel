@@ -36,6 +36,12 @@ class HashRing:
             node_val = VirtualNode(node_hash, node_id, i)
             self.data.add(node_val) #function add in class AVLTree
         return self.data
+    
+    def _direct_add_virtual_node(self, node_id: int, node_hash: int, j: int):
+        # !! FOR TESTING ONLY !!
+        node_val = VirtualNode(node_hash, node_id, j)
+        self.data.add(node_val) #function add in class AVLTree
+        return self.data
 
     def remove_node(self, node_id: int):
         for i in range(self.v):
@@ -72,6 +78,9 @@ class HashRing:
             return None
 
         node_data = self.data._get_key(node) #function _get_key in class AVLTree
+        
+        if isinstance(node_data, tuple):
+            node_data = node_data[0] 
 
         if node_data == data:  
             return node.data   

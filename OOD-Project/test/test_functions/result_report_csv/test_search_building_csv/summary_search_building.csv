@@ -1,0 +1,4 @@
+no.,test_detail,n_search,n_found,n_expect,passed
+1,search building at building's hash on the ring,10,10,10,True
+2,search building not at building's hash on the ring,10,10,10,True
+3,search repeated building hash,11,11,11,True

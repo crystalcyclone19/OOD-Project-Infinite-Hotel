@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import util.math as m
 import statistics as stat
+from pathlib import Path
 
 class Graph:
     def __init__(self,
@@ -92,9 +93,11 @@ class Graph:
             }
         self.figures[figure_name]["report"] = report_text
     
-    def save(self, file_name:str):
+    def save(self,folder_name:str, file_name:str):
          self.load()
-         self.fig.savefig(f"graph/{file_name}.png", dpi=200, bbox_inches="tight")
+         save_dir = Path(f"graph/{folder_name}")
+         save_dir.mkdir(parents=True,exist_ok=True)
+         self.fig.savefig(f"graph/{folder_name}/{file_name}.png", dpi=200, bbox_inches="tight")
          print(f"Export graph to graph/{file_name}.png...")
          plt.close(self.fig)
 
@@ -125,7 +128,7 @@ class Graph:
             # Graph area(ax)
             # =========================
             ax = self.fig.add_subplot(gs[0, i])
-            ax.set_xscale("log")
+            # ax.set_xscale("log")
 
             for n, plot in enumerate(figure["plots"]):
                 dx, dy = offsets[n % len(offsets)]

@@ -1,0 +1,5 @@
+no.,test_detail,target_building,n_affected,n_min_expected,passed
+1,add non-existing building,4,6,6,True
+2,add existing building,1,0,0,True
+3,remove existing building,1,8,8,True
+4,remove non-existing building,4,0,0,True

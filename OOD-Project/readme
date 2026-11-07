@@ -4,11 +4,19 @@ Command
 7.2 Test 
  Test A:
      Command: python -m test.test_A 
-     Output: .png in graph folder,Terminal shows state of process
-     Info: Expect 4 pictures: (1)Test_A_assing_search_ordering_varinace.png, 
-                             (2)Test_A_assing_search_ordering.png,
-                             (3)Test_A_memory_variance.png
-                             (4)Test_A_memory.png
+     Out put: .png in graph folder,Terminal shows state of process
+     Info: Expect 9 pictures: consistant hashing---> test_A_consistant_hashing_assgin_search.png
+                                                 |-> test_A_consistant_hashing_ordering.png
+                                                 |-> test_A_consistant_hashing_memeory.png
+                                                 |-> test_A_consistant_hashing_assgin_ordering_variance.png
+                                                 |-> test_A_consistant_hashing_memeory_variance.png
+                                                 
+                                      hash mod n---> test_A_hash_mod_n_assgin_search.png
+                                                 |-> test_A_hash_mod_n_ordering.png
+                                                 |-> test_A_hash_mod_n_memeory.png
+                                                 |-> test_A_hash_mod_n_assgin_ordering_variance.png
+                                                 |-> test_A_hash_mod_n_memeory_variance.png
+
  Test B:
      Command: python -m test.test_B.test_B
      Output: .csv in CSV/CSV_TestB folder, .png in GRAPG_TestB/graph folder, Terminal shows state of process and execution progress
@@ -30,4 +38,8 @@ Command
             (6) summary_stats_bsalt_2_csalt_2.png
  Test C:
      Command: python -m test.test_C
-     Output: Termianl shows state of process and the results, Window shows graphs
+     Out put: Termianl shows state of process and the results, Window shows graphs
+    
+Test Function and Edge Cases:
+     Command: python -m test.test_all_functions
+     Out put: Termianl shows state of process and the results. CSV files was located at test/test_functions/result_report_csv

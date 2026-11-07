@@ -1,0 +1,11 @@
+# test: "A"
+# name: "medians_routing_space_peak"
+# N: 10
+# V: 32
+# number_of_round: 3
+# min: 0.00214385986328125
+# max: 0.00214385986328125
+# salt: ["0", "1", "2"]
+# method: "hash_mod_n"
+total_round,memory usage(MiB)
+3,0.00214385986328125

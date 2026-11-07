@@ -1,0 +1,10 @@
+# test: "A"
+# name: "calculate_building_1000_time"
+# N: 10
+# V: 32
+# C(max): 10
+# round: 2
+# salt: "1"
+# method: "hash_mod_n"
+round,time usage(us)
+2,0.20030000086990185

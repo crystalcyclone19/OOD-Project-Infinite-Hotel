@@ -1,4 +1,6 @@
 import csv
+from pathlib import Path
+import json
 
 
 def create_customer_csv(file_name: str, customers: list):
@@ -47,3 +49,17 @@ def count_line_csv(file_name: str) -> int:
         reader = csv.reader(f)
         next(reader,None)
         return len(list(reader))
+
+def save_results(x_values, y_values, metadata, x_name, y_name, folder_name, file_name="output.csv"):
+    if len(x_values) != len(y_values):
+        raise ValueError("x_values and y_values must be the same length")
+
+    save_dir = Path("CSV") / folder_name
+    save_dir.mkdir(parents=True, exist_ok=True)
+
+    with open(save_dir / file_name, "w", newline="", encoding="utf-8") as f:
+        for key, val in metadata.items():
+            f.write(f"# {key}: {json.dumps(val)}\n")
+        writer = csv.writer(f)
+        writer.writerow([x_name, y_name])
+        writer.writerows(zip(x_values, y_values))
