@@ -7,6 +7,7 @@
 ## สารบัญ
 - [ข้อกำหนดเบื้องต้นและการติดตั้ง (Prerequisites & Installation)](#-ข้อกำหนดเบื้องต้นและการติดตั้ง)
 - [โครงสร้างโฟลเดอร์ (Directory Structure)](#โครงสร้างโฟลเดอร์ที่สำคัญ)
+- [การรันโปรแกรมหลัก (Run the Application)](#การรันโปรแกรมหลัก)
 - [System & Algorithm Tests](#system--algorithm-tests)
 - [Unit Tests & Function Verification](#unit-tests--function-verification)
 
@@ -29,16 +30,20 @@ OOD-Project-Infinite-Hotel/
 ├── README.md
 ├── requirements.txt
 └── OOD-Project/                       # โฟลเดอร์หลักของโปรเจกต์ (รันคำสั่งทั้งหมดจากที่นี่)
-    ├── main.py                        # จุดเริ่มต้นของโปรแกรม
+    ├── app.py                         # โปรแกรมหลัก (Text UI)
     ├── hotel_sys.py                   # คลาสหลักของระบบ: HotelSystem, Customer, BuildingWithRoom, MovedCustomer
     ├── HashRing.py                    # HashHelper, VirtualNode, HashRing (Consistent Hashing), HashModN
     ├── AVLTree.py                     # AVLTree (AVLNormalTree, AVLClassTree) ใช้เก็บข้อมูลเรียงลำดับ
+    ├── data/                          # ข้อมูลที่ app.py โหลด/บันทึก
+    │   ├── config.json                # ค่า hash_type, V, salt ของอาคารและแขก
+    │   ├── buildings.csv              # รหัสอาคาร เรียงตามลำดับที่เพิ่ม
+    │   └── guests.csv                 # channel_id, sequence_id, node_id, room_no
     ├── util/                          # ฟังก์ชันช่วยเหลือ
     │   ├── csv_sys.py                 # อ่าน/เขียนไฟล์ CSV
     │   ├── graph.py                   # สร้างกราฟ
     │   ├── timer.py                   # จับเวลา
     │   ├── memory_usage.py            # วัดการใช้หน่วยความจำ
-    │   ├── math.py                    # ฟังก์ชันคำนวณ (เช่น ค่ามัธยฐาน)
+    │   ├── math.py                    # ฟังก์ชันคำนวณ (ค่ามัธยฐาน ความแปรปรวน การ fit โมเดล)
     │   └── color.py                   # สีสำหรับแสดงผลบน Terminal
     ├── graph/                         # รูปกราฟผลลัพธ์
     │   ├── test_A/                    # กราฟ Test A (แยก consistant_hashing/ และ hash_mod_n/)
@@ -46,16 +51,19 @@ OOD-Project-Infinite-Hotel/
     ├── CSV/                           # ไฟล์ CSV ผลลัพธ์
     │   ├── test_A/                    # CSV Test A (แยก consistant_hashing/ และ hash_mod_n/)
     │   ├── CSV_TestB/                 # CSV Test B
+    │   ├── app_output/                # CSV ที่ app.py ส่งออก (เช่น รายการแขกที่ถูกย้าย)
     │   └── test_C_results.csv         # CSV Test C
     └── test/                          # Script สำหรับรันการทดสอบ
         ├── test_A.py                  # Test A
         ├── test_B/
         │   ├── test_B.py              # Test B
         │   ├── generate_mock_data_csv.py   # สร้างข้อมูลจำลอง
-        │   └── load_data_to_system.py      # โหลดข้อมูลเข้าระบบ
+        │   ├── load_data_to_system.py      # โหลดข้อมูลเข้าระบบ
+        │   ├── buildings.csv          # ข้อมูลอาคารจำลองที่สร้างขึ้น
+        │   └── guests.csv             # ข้อมูลแขกจำลองที่สร้างขึ้น
         ├── test_C.py                  # Test C
-        ├── test_all_functions.py      # ตัวรัน Unit Test ทั้งหมด (9.2) + สรุปผลเป็น overall_summary.csv
-        └── test_functions/            # ชุด Unit Test สำหรับทดสอบแต่ละฟังก์ชัน (9.2)
+        ├── test_all_functions.py      # ตัวรัน Unit Test ทั้งหมด + สรุปผลเป็น overall_summary.csv
+        └── test_functions/            # ชุด Unit Test สำหรับทดสอบแต่ละฟังก์ชัน
             ├── test_1_add_customer.py
             ├── test_2_room_conflict.py
             ├── test_3_search_building.py
@@ -65,6 +73,23 @@ OOD-Project-Infinite-Hotel/
             ├── result_report_csv/     # รายงานผลการทดสอบ (CSV) ของแต่ละชุด + overall_summary.csv
             └── test_list.md           # รายการทดสอบขั้นต่ำตามโจทย์
 ```
+
+---
+
+## การรันโปรแกรมหลัก
+
+โปรแกรมหลักเป็น Text UI ในไฟล์ `app.py` รันจากโฟลเดอร์ `OOD-Project`
+
+```bash
+cd OOD-Project-Infinite-Hotel/OOD-Project
+python app.py
+```
+
+- ตอนเปิดโปรแกรม จะโหลดข้อมูลจากโฟลเดอร์ `data/` (`config.json`, `buildings.csv`, `guests.csv`)
+- ข้อมูลหลักอยู่ในหน่วยความจำ ส่วนไฟล์ใน `data/` เป็นสำเนาที่บันทึกไว้ และจะถูกบันทึกใหม่หลังทุกคำสั่งที่เปลี่ยนข้อมูล
+- ไฟล์ CSV ที่ส่งออกจากโปรแกรม (เช่น รายการแขกที่ถูกย้าย) อยู่ใน `CSV/app_output/`
+- ค่าตั้งต้นของระบบ (`hash_type`, `V`, salt ของอาคารและแขก) แก้ได้ที่ `data/config.json`
+
 
 ---
 
