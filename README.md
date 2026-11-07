@@ -7,15 +7,15 @@
 ## สารบัญ
 - [ข้อกำหนดเบื้องต้นและการติดตั้ง (Prerequisites & Installation)](#-ข้อกำหนดเบื้องต้นและการติดตั้ง)
 - [โครงสร้างโฟลเดอร์ (Directory Structure)](#โครงสร้างโฟลเดอร์ที่สำคัญ)
-- [System & Algorithm Tests (follow 7)](#72-system--algorithm-tests)
-- [Unit Tests & Function Verification (follow 9.2)](#-92-unit-tests--function-verification)
+- [7.2 System & Algorithm Tests](#72-system--algorithm-tests)
+- [9.2 Unit Tests & Function Verification](#-92-unit-tests--function-verification)
 
 ---
 
-## ข้อกำหนดเบื้องต้นและการติดตั้ง
+## 🛠 ข้อกำหนดเบื้องต้นและการติดตั้ง
 
 1. **Python:** ภาษา Python เวอร์ชัน 3.8 ขึ้นไป
-2. **การติดตั้ง Dependencies:**
+2. **การติดตั้ง Dependencies:** (รันที่โฟลเดอร์ `OOD-Project-Infinite-Hotel/`)
    ```bash
    pip install -r requirements.txt
    ```
@@ -26,45 +26,64 @@
 
 ```text
 OOD-Project-Infinite-Hotel/
-├── graph/                         # โฟลเดอร์เก็บรูปภาพกราฟผลลัพธ์จาก Test A, Test B
-│   ├── test_A/                    # กราฟจาก Test A
-│   └── GRAPH_TestB/               # กราฟจาก Test B
-├── CSV/                           # โฟลเดอร์เก็บไฟล์ CSV จาก Process ต่างๆ
-│   ├── test_A/                    # ไฟล์ CSV จาก Test A
-│   └── CSV_TestB/                 # ไฟล์ CSV จาก Test B
-└── test/                          # โฟลเดอร์เก็บ Script สำหรับรันการทดสอบ
-    ├── test_A.py                  # Function run test_A
-    ├── test_B/
-    │   └── test_B.py              # Function run test_B
-    ├── test_C.py                  # Function run test_C
-    ├── test_all_functions.py      # Validation Function follow 9.2
-    └── test_functions/            # ชุด Unit Test สำหรับทดสอบแต่ละฟังก์ชัน (9.2)
-        ├── test_all_function.py
-        ├── test_add_customer.py
-        ├── test_room_conflict.py
-        ├── test_search_building.py
-        ├── test_manage_building.py
-        └── test_edge_case.py
+├── README.md
+├── requirements.txt
+└── OOD-Project/                       # โฟลเดอร์หลักของโปรเจกต์ (รันคำสั่งทั้งหมดจากที่นี่)
+    ├── main.py                        # จุดเริ่มต้นของโปรแกรม
+    ├── hotel_sys.py                   # คลาสหลักของระบบ: HotelSystem, Customer, BuildingWithRoom, MovedCustomer
+    ├── HashRing.py                    # HashHelper, VirtualNode, HashRing (Consistent Hashing), HashModN
+    ├── AVLTree.py                     # AVLTree (AVLNormalTree, AVLClassTree) ใช้เก็บข้อมูลเรียงลำดับ
+    ├── util/                          # ฟังก์ชันช่วยเหลือ
+    │   ├── csv_sys.py                 # อ่าน/เขียนไฟล์ CSV
+    │   ├── graph.py                   # สร้างกราฟ
+    │   ├── timer.py                   # จับเวลา
+    │   ├── memory_usage.py            # วัดการใช้หน่วยความจำ
+    │   ├── math.py                    # ฟังก์ชันคำนวณ (เช่น ค่ามัธยฐาน)
+    │   └── color.py                   # สีสำหรับแสดงผลบน Terminal
+    ├── graph/                         # รูปกราฟผลลัพธ์
+    │   ├── test_A/                    # กราฟ Test A (แยก consistant_hashing/ และ hash_mod_n/)
+    │   └── GRAPH_TestB/               # กราฟ Test B
+    ├── CSV/                           # ไฟล์ CSV ผลลัพธ์
+    │   ├── test_A/                    # CSV Test A (แยก consistant_hashing/ และ hash_mod_n/)
+    │   ├── CSV_TestB/                 # CSV Test B
+    │   └── test_C_results.csv         # CSV Test C
+    └── test/                          # Script สำหรับรันการทดสอบ
+        ├── test_A.py                  # Test A
+        ├── test_B/
+        │   ├── test_B.py              # Test B
+        │   ├── generate_mock_data_csv.py   # สร้างข้อมูลจำลอง
+        │   └── load_data_to_system.py      # โหลดข้อมูลเข้าระบบ
+        ├── test_C.py                  # Test C
+        ├── test_all_functions.py      # ตัวรัน Unit Test ทั้งหมด (9.2) + สรุปผลเป็น overall_summary.csv
+        └── test_functions/            # ชุด Unit Test สำหรับทดสอบแต่ละฟังก์ชัน (9.2)
+            ├── test_1_add_customer.py
+            ├── test_2_room_conflict.py
+            ├── test_3_search_building.py
+            ├── test_4_manage_building.py
+            ├── test_5_edge_case.py
+            ├── test_set_csv/          # ข้อมูลตั้งต้น (buildings_with_rooms.csv, customers.csv)
+            ├── result_report_csv/     # รายงานผลการทดสอบ (CSV) ของแต่ละชุด + overall_summary.csv
+            └── test_list.md           # รายการทดสอบขั้นต่ำตามโจทย์
 ```
 
 ---
 
-## System & Algorithm Tests (follow 7)
+## 7.2 System & Algorithm Tests
 
 การทดสอบประสิทธิภาพเชิงเปรียบเทียบระหว่าง Consistent Hashing และ Hash Mod N ในสถานการณ์ต่างๆ
-ในการรันฟังก์ชันต่างๆ ต้องเข้าไปที่โฟลเดอร์โปรเจกต์ OOD-Project ก่อน จึงจะสามารถรันด้วย Command ด้านล่างได้
+ในการรันฟังก์ชันต่างๆ ต้องเข้าไปที่โฟลเดอร์ `OOD-Project` ก่อน จึงจะสามารถรันด้วย Command ด้านล่างได้
 
 ```bash
-cd OOD-Project
+cd OOD-Project-Infinite-Hotel/OOD-Project
 ```
 
 | ชุดการทดสอบ | คำสั่ง (Command) | ผลลัพธ์และสิ่งที่ระบบแสดงผล (Output) |
 | :--- | :--- | :--- |
-| **Test A** | `python -m test.test_A` | แสดงสถานะบน Terminal สร้างรูปกราฟ 10 ภาพ (อัลกอริทึมละ 5 ภาพ) ในโฟลเดอร์ `graph/test_A/` และไฟล์ CSV ในโฟลเดอร์ `CSV/test_A/` |
+| **Test A** | `python -m test.test_A` | แสดงสถานะบน Terminal สร้างรูปกราฟ 12 ภาพ (อัลกอริทึมละ 6 ภาพ) ในโฟลเดอร์ `graph/test_A/` และไฟล์ CSV ในโฟลเดอร์ `CSV/test_A/` |
 | **Test B** | `python -m test.test_B.test_B` | แสดงสถานะและผลลัพธ์บน Terminal พร้อมเปิดหน้าต่าง Pop-up แสดงกราฟเปรียบเทียบ สร้างรูปกราฟ 6 ภาพในโฟลเดอร์ `graph/GRAPH_TestB/` และไฟล์ CSV ในโฟลเดอร์ `CSV/CSV_TestB/` |
 | **Test C** | `python -m test.test_C` | แสดงสถานะและผลลัพธ์บน Terminal พร้อมเปิดหน้าต่าง Pop-up แสดงกราฟเปรียบเทียบ และไฟล์ CSV ในโฟลเดอร์ `CSV/` |
 
-### รายละเอียดผลลัพธ์ Test A 
+### รายละเอียดผลลัพธ์ Test A
 
 #### 📄 1. CSV Files (ตำแหน่งจัดเก็บ: `CSV/test_A/` แยกตาม `consistant_hashing/` และ `hash_mod_n/`)
 สำหรับทั้ง 2 อัลกอริทึม (`consistant_hashing` และ `hash_mod_n`) ระบบจะสร้างโครงสร้างไฟล์ CSV ดังนี้:
@@ -80,7 +99,7 @@ cd OOD-Project
 
 * **ไฟล์ค่ามัธยฐาน (Medians CSVs):**
   1. `medians_assign_guest.csv`
-  2. `medians_calculate_building_1000_time_3_round.csv`
+  2. `medians_calculate_building_1000_time_3_rounds.csv`
   3. `medians_current_memory_usage.csv`
   4. `medians_ordering_guest.csv`
   5. `medians_peak_memory_usage.csv`
@@ -89,18 +108,13 @@ cd OOD-Project
   8. `medians_searching_guest.csv`
 
 #### 📈 2. Graph Files (ตำแหน่งจัดเก็บ: `graph/test_A/`)
-#### `graph/test_A/consistent_hashing/`
-1. `test_A_consistant_hashing_assgin_search.png`
-2. `test_A_consistant_hashing_ordering.png`
-3. `test_A_consistant_hashing_memeory.png`
-4. `test_A_consistant_hashing_assgin_ordering_variance.png`
-5. `test_A_consistant_hashing_memeory_variance.png`
-#### `graph/test_A/hash_mod_n/`
-1. `test_A_hash_mod_n_assgin_search.png`
-2. `test_A_hash_mod_n_ordering.png`
-3. `test_A_hash_mod_n_memeory.png`
-4. `test_A_hash_mod_n_assgin_ordering_variance.png`
-5. `test_A_hash_mod_n_memeory_variance.png`
+ทั้ง 2 อัลกอริทึม (`graph/test_A/consistant_hashing/` และ `graph/test_A/hash_mod_n/`) มีไฟล์ชื่อเหมือนกัน ดังนี้:
+1. `test_A_assign_search.png`
+2. `test_A_ordering.png`
+3. `test_A_assign_search_ordering.png`
+4. `test_A_assign_search_ordering_variance.png`
+5. `Test_A_memory.png`
+6. `Test_A_memory_variance.png`
 
 ### รายละเอียดผลลัพธ์ Test B
 #### 📄 1. CSV Files (ตำแหน่งจัดเก็บ: `CSV/CSV_TestB/`)
@@ -127,18 +141,21 @@ Test C บันทึกผลลัพธ์เฉพาะ CSV : `CSV/test_C_
 
 ---
 
-## Unit Tests & Function Verification (follow 9.2)
+## 🧪 9.2 Unit Tests & Function Verification
 
 การทดสอบฟังก์ชันการทำงานพื้นฐาน การจัดการข้อมูล และการรองรับกรณีขอบเขต (Edge Cases)
 
 ### คำสั่งสำหรับรันการทดสอบ Unit Test ทั้งหมด:
+รันจากโฟลเดอร์ `OOD-Project` (สคริปต์ค้นหาไฟล์ `test_*.py` ใน `test/test_functions` จาก path สัมพัทธ์)
 ```bash
-python -m test.test_functions.test_all_function
+python test/test_all_functions.py
 ```
+ผลลัพธ์: สรุปจำนวนที่ผ่าน/ไม่ผ่านบน Terminal และบันทึกเป็น `test/test_functions/result_report_csv/overall_summary.csv`
+พร้อมรายงานของแต่ละชุดทดสอบในโฟลเดอร์ `result_report_csv/` เดียวกัน
 
 ### รายละเอียดชุดการทดสอบย่อย (Test Modules):
-1. **`test_add_customer.py`**: ทดสอบระบบการเพิ่มลูกค้าและการจัดสรรห้องพักตามอัลกอริทึม
-2. **`test_room_conflict.py`**: ทดสอบการจัดการกรณีห้องพักเกิดข้อขัดแย้ง/ชนกัน (Collision Handling)
-3. **`test_search_building.py`**: ทดสอบฟังก์ชันการค้นหาอาคารและตรวจสอบตำแหน่งห้องพักของลูกค้า
-4. **`test_manage_building.py`**: ทดสอบระบบการจัดการอาคาร การเพิ่มและลดอาคารแบบ dynamic
-5. **`test_edge_case.py`**: ทดสอบกรณีขอบเขต ข้อมูลไม่สมบูรณ์ หรือกรณีข้อยกเว้นต่างๆ (Exception & Edge Cases)
+1. **`test_1_add_customer.py`**: ทดสอบระบบการเพิ่มลูกค้าและการจัดสรรห้องพักตามอัลกอริทึม
+2. **`test_2_room_conflict.py`**: ทดสอบการจัดการกรณีห้องพักเกิดข้อขัดแย้ง/ชนกัน (Collision Handling)
+3. **`test_3_search_building.py`**: ทดสอบฟังก์ชันการค้นหาอาคารและตรวจสอบตำแหน่งห้องพักของลูกค้า
+4. **`test_4_manage_building.py`**: ทดสอบระบบการจัดการอาคาร การเพิ่มและลดอาคารแบบ dynamic
+5. **`test_5_edge_case.py`**: ทดสอบกรณีขอบเขต ข้อมูลไม่สมบูรณ์ หรือกรณีข้อยกเว้นต่างๆ (Exception & Edge Cases)
