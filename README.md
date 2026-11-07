@@ -6,9 +6,9 @@
 
 ## สารบัญ
 - [ข้อกำหนดเบื้องต้นและการติดตั้ง (Prerequisites & Installation)](#-ข้อกำหนดเบื้องต้นและการติดตั้ง)
-- [โครงสร้างโฟลเดอร์ (Directory Structure)](#-โครงสร้างโฟลเดอร์)
-- [7.2 System & Algorithm Tests](#7.2-system--algorithm-tests)
-- [9.2 Unit Tests & Function Verification](#9.2-unit-tests--function-verification)
+- [โครงสร้างโฟลเดอร์ (Directory Structure)](#โครงสร้างโฟลเดอร์ที่สำคัญ)
+- [7.2 System & Algorithm Tests](#72-system--algorithm-tests)
+- [9.2 Unit Tests & Function Verification](#-92-unit-tests--function-verification)
 
 ---
 
@@ -22,20 +22,22 @@
 
 ---
 
-## 📁 โครงสร้างโฟลเดอร์ที่สำคัญ
+## โครงสร้างโฟลเดอร์ที่สำคัญ
 
 ```text
 OOD-Project-Infinite-Hotel/
 ├── graph/                         # โฟลเดอร์เก็บรูปภาพกราฟผลลัพธ์จาก Test A, Test B
+│   ├── test_A/                    # กราฟจาก Test A
+│   └── GRAPH_TestB/               # กราฟจาก Test B
 ├── CSV/                           # โฟลเดอร์เก็บไฟล์ CSV จาก Process ต่างๆ
-│   └── CSV_TestB/                 # โฟลเดอร์เก็บไฟล์ CSV จาก Test B
-│   └── test_A/                    # โฟลเดอร์เก็บไฟล์ CSV จาก Test A
+│   ├── test_A/                    # ไฟล์ CSV จาก Test A
+│   └── CSV_TestB/                 # ไฟล์ CSV จาก Test B
 └── test/                          # โฟลเดอร์เก็บ Script สำหรับรันการทดสอบ
-    ├── test_A.py                  #Function run test_A
+    ├── test_A.py                  # Function run test_A
     ├── test_B/
-    │   └── test_B.py              #Function run test_B
-    ├── test_C.py                  #Function run test_C
-    ├── test_all_functions.py      #Validation Function follow 9.2
+    │   └── test_B.py              # Function run test_B
+    ├── test_C.py                  # Function run test_C
+    ├── test_all_functions.py      # Validation Function follow 9.2
     └── test_functions/            # ชุด Unit Test สำหรับทดสอบแต่ละฟังก์ชัน (9.2)
         ├── test_all_function.py
         ├── test_add_customer.py
@@ -50,12 +52,17 @@ OOD-Project-Infinite-Hotel/
 ## 7.2 System & Algorithm Tests
 
 การทดสอบประสิทธิภาพเชิงเปรียบเทียบระหว่าง Consistent Hashing และ Hash Mod N ในสถานการณ์ต่างๆ
+ในการรันฟังก์ชันต่างๆ ต้องเข้าไปที่โฟลเดอร์โปรเจกต์ OOD-Project ก่อน จึงจะสามารถรันด้วย Command ด้านล่างได้
+
+```bash
+cd OOD-Project
+```
 
 | ชุดการทดสอบ | คำสั่ง (Command) | ผลลัพธ์และสิ่งที่ระบบแสดงผล (Output) |
 | :--- | :--- | :--- |
-| **Test A** | `python -m test.test_A` | แสดงสถานะบน Terminal สร้างรูปกราฟ 4 ภาพในโฟลเดอร์ `graph/test_A/` และไฟล์ CSV ในโฟลเดอร์ `CSV/test_A`|
-| **Test B** | `python -m test.test_B.test_B` | แสดงสถานะและผลลัพธ์บน Terminal พร้อมเปิดหน้าต่าง Pop-up แสดงกราฟเปรียบเทียบ สร้างรูปกราฟ 6 ภาพในโฟลเดอร์ `graph/GRAPH_TestB` และไฟล์ CSV ในโฟลเดอร์ `CSV/CSV_TestB/`|
-| **Test C** | `python -m test.test_C` | แสดงสถานะและผลลัพธ์บน Terminal พร้อมเปิดหน้าต่าง Pop-up แสดงกราฟเปรียบเทียบ และไฟล์ CSV ในโฟลเดอร์ `CSV/test_C_results.csv`|
+| **Test A** | `python -m test.test_A` | แสดงสถานะบน Terminal สร้างรูปกราฟ 10 ภาพ (อัลกอริทึมละ 5 ภาพ) ในโฟลเดอร์ `graph/test_A/` และไฟล์ CSV ในโฟลเดอร์ `CSV/test_A/` |
+| **Test B** | `python -m test.test_B.test_B` | แสดงสถานะและผลลัพธ์บน Terminal พร้อมเปิดหน้าต่าง Pop-up แสดงกราฟเปรียบเทียบ สร้างรูปกราฟ 6 ภาพในโฟลเดอร์ `graph/GRAPH_TestB/` และไฟล์ CSV ในโฟลเดอร์ `CSV/CSV_TestB/` |
+| **Test C** | `python -m test.test_C` | แสดงสถานะและผลลัพธ์บน Terminal พร้อมเปิดหน้าต่าง Pop-up แสดงกราฟเปรียบเทียบ และไฟล์ CSV ในโฟลเดอร์ `CSV/` |
 
 ### รายละเอียดผลลัพธ์ Test A
 
@@ -112,10 +119,13 @@ OOD-Project-Infinite-Hotel/
 4. `summary_stats_bsalt_0_csalt_0.png`
 5. `summary_stats_bsalt_1_csalt_1.png`
 6. `summary_stats_bsalt_2_csalt_2.png`
+
 ---
 
 ### รายละเอียดผลลัพธ์ Test C
 Test C บันทึกผลลัพธ์เฉพาะ CSV : `CSV/test_C_results.csv`
+
+---
 
 ## 🧪 9.2 Unit Tests & Function Verification
 
@@ -123,7 +133,7 @@ Test C บันทึกผลลัพธ์เฉพาะ CSV : `CSV/test_C_
 
 ### คำสั่งสำหรับรันการทดสอบ Unit Test ทั้งหมด:
 ```bash
-python test\test_functions\test_all_function.py
+python -m test.test_functions.test_all_function
 ```
 
 ### รายละเอียดชุดการทดสอบย่อย (Test Modules):

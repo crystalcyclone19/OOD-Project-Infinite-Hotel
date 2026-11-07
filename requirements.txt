@@ -1,0 +1,13 @@
+# Data Analysis & Manipulation
+pandas>=1.3.0
+numpy>=1.21.0
+
+# Plotting & Graphical Display (Test A, Test B, Test C)
+matplotlib>=3.5.0
+seaborn>=0.11.0
+
+# Terminal Progress Bar (Test B progress status)
+tqdm>=4.62.0
+
+# Testing Framework (Optional)
+pytest>=7.0.0
