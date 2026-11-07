@@ -15,11 +15,10 @@ from HashRing import HashHelper, HashRing, VirtualNode
 V_A = 1
 V_B = 3
 building_number_A = 10
-building_number_B = 10
-initial_channel = 1
+building_number_B = 5
 building_salt = "b1"
 customer_salt = "c1"
-global_test_hash = 500
+global_test_hash = 1000
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
 RESULT_CSV_DIR = os.path.join(os.path.dirname(__file__), "result_report_csv")
@@ -99,31 +98,26 @@ class TestSearchBuilding(unittest.TestCase):
         return hotel
     
     def set_up_B(self) -> HotelSystem:
-
         hotel = HotelSystem(V_B, building_salt, customer_salt)
         
-        defined_hash = global_test_hash * 2
+        # define base hash and increment rate (step)
+        base_hash = global_test_hash
+        step_hash = global_test_hash
         
-        current_group = []
-        
-        for v_index in range(V_B):
-            step = 3
-            start_shift = v_index * 2
-            
-            for i in range(building_number_B):
+        # create 3 pair (6 test set) sort by minimum hash value
+        for i in range(V_B):
 
-                node_id = ((start_shift + i * step) % building_number_B) + 1
-                current_group.append((node_id, v_index))
-                
-                if len(current_group) == V_B:
-                    for n_id, v_idx in current_group:
-                        hotel.ring._direct_add_virtual_node(n_id, defined_hash, v_idx)
-                    defined_hash *= 2
-                    current_group = []
-        
-        if current_group:
-            for n_id, v_idx in current_group:
-                hotel.ring._direct_add_virtual_node(n_id, defined_hash, v_idx)
+            # 1. test set i + 1 (only node_id that not equal)
+            hash_diff_node = base_hash + (2 * i) * step_hash
+            v_idx = i
+            for node_id in range(1, V_B + 1):  # node_id difference (1, 2, 3)
+                hotel.ring._direct_add_virtual_node(node_id, hash_diff_node, v_idx)
+            
+            # 2. test set i + 1 (only v_idx (j) that not equal)
+            hash_same_node = base_hash + (2 * i + 1) * step_hash
+            node_id = i + 1
+            for v_index in range(V_B):  # v_idx difference (0, 1, 2)
+                hotel.ring._direct_add_virtual_node(node_id, hash_same_node, v_index)
         
         return hotel
 
@@ -198,32 +192,40 @@ class TestSearchBuilding(unittest.TestCase):
     def test_search_at_building_hash(self):
         hotel = self.set_up_A()
         
+        # get all virtual node list and sorted by node_id
         virtual_nodes: list[VirtualNode] = []
         self.get_all_virtual_nodes(hotel.ring.data.root, virtual_nodes)
         virtual_nodes.sort(key=lambda x: x.hash)
         
-        # บันทึก searched_by_hash สำหรับ virtual node ที่ถูกค้นหาได้
+        # save searched_by_hash for found virtual node
         node_searched_hash = {}
         
+        # create 
         n_search = building_number_A
         n_found = 0
         n_matched = 0
         
+        
+        # start loop search for virtualnode
         for i in range(1, building_number_A + 1):
+            # create hash
             node_hash = HashHelper.get_node_hash(i, 0, building_salt)
             
+            # search for virtual node
             node_id = self.search_building_by_hash(hotel, node_hash)
+            
             if node_id is not None:
                 n_found += 1
             if node_id == i:
                 n_matched += 1
                 
-            # หา index ของ virtual node ที่ตรงกับ node_id นี้
+            # find index of virtual node that match the node_id
             for idx, v in enumerate(virtual_nodes):
                 if v.node_id == node_id:
                     node_searched_hash[idx] = node_hash
                     break
-                    
+            
+            # validate if node from searching match with target virtual node
             self.assertEqual(i, node_id)
             
         passed = (n_search == n_found == n_matched)
@@ -249,19 +251,22 @@ class TestSearchBuilding(unittest.TestCase):
     def test_search_not_at_building_hash(self):
         hotel = self.set_up_A()
         
+        # get all virtual node list and sorted by node_id
         virtual_nodes: list[VirtualNode] = []
         self.get_all_virtual_nodes(hotel.ring.data.root, virtual_nodes)
         virtual_nodes.sort(key=lambda x: x.hash)
         
+        # create node_hash: node_id dictionary pairs
         node_hash_pairs = {}
         for node in virtual_nodes:
             node_hash_pairs[node.hash] = node.node_id
         
+        # extract keys and values as list
         node_hash_list = list(node_hash_pairs.keys())
         node_id_list = list(node_hash_pairs.values())
         
-        # เตรียมชุดค่า hash สำหรับค้นหา และผลลัพธ์ node_id ที่คาดหวัง
-        # แต่ละเคส: (search_hash, target_index_in_virtual_nodes, expected_node_id)
+        # prepare hash for searching  and show expected node_id result
+        # for each case: (search_hash, target_index_in_virtual_nodes, expected_node_id)
         search_cases = []
         for i in range(len(node_hash_list) - 1):
             h = (node_hash_list[i] + node_hash_list[i + 1]) // 2
@@ -269,25 +274,31 @@ class TestSearchBuilding(unittest.TestCase):
             expected_id = node_id_list[i + 1]
             search_cases.append((h, target_index, expected_id))
             
-        # เคสค่า hash เกินกว่าตัวสุดท้าย (exceed hash value) -> หมุนกลับไปตัวแรกของ ring (index 0)
-        exceed_hash = node_hash_list[-1] + 500000
+        # case that hash exceed the most hash virtual node -> rotate back to start of ring (index 0)
+        exceed_hash = node_hash_list[-1] + int(2e18)
         search_cases.append((exceed_hash, 0, node_id_list[0]))
         
-        # บันทึก searched_by_hash map สำหรับแต่ละ virtual node ที่ถูกค้นหาได้
+        # save searched_by_hash map for each found virtual node
         node_searched_hash = {}
         
         n_search = len(search_cases)
         n_found = 0
         n_matched = 0
         
+        # start loop chech  for matched expected value
         for h, target_index, expected_id in search_cases:
+            
+            # search for virtual node by hash between 2 virtual node
             node_id = self.search_building_by_hash(hotel, h)
+            
             if node_id is not None:
                 n_found += 1
             if node_id == expected_id:
                 n_matched += 1
-                
+            
             node_searched_hash[target_index] = h
+            
+            # validate if result from search is expected
             self.assertEqual(expected_id, node_id)
             
         passed = (n_search == n_found == n_matched)
@@ -310,23 +321,24 @@ class TestSearchBuilding(unittest.TestCase):
         write_csv(csv_path, csv_header, csv_rows)
     
     # test 3: create same hash building and search by sub-key (node_id, j or c, s)
-    def test_search_repeated_buidling_hash(self):
+    def test_search_repeated_building_hash(self):
         hotel = self.set_up_B()
         
+        # get all virtual nodes list
         virtual_nodes: list[VirtualNode] = []
         self.get_all_virtual_nodes(hotel.ring.data.root, virtual_nodes)
         v_hash_list = [node.hash for node in virtual_nodes]
         
-        # self.print_virtual_node_list(hotel)
-        
-        # บันทึก searched_key map ไว้สำหรับแต่ละ node ที่ถูกค้นหาได้
+        # save searched_key map for each node that was found
         node_searched_key = {}
         
         n_search = building_number_B + 1
         n_found = 0
         n_matched = 0
         
+        # define hash for testing (start with test_hash=1001, first virtual node's hash < test_hash < second virtual node's hash)
         test_hash = global_test_hash + 1
+        # start loop searching and testing
         for i in range(building_number_B + 1):
             index = bisect.bisect_left(v_hash_list, test_hash)
             if index >= len(v_hash_list):
@@ -340,10 +352,13 @@ class TestSearchBuilding(unittest.TestCase):
             if search_node_id == target_node_id:
                 n_matched += 1
                 
-            # บันทึก searched_key ให้กับ index ของ virtual node ตัวที่ถูกค้นพบ
+            # save searched_key for every index of virtual node that was found
             node_searched_key[index] = test_hash
+
+            # validate if target node_id is equal to result node_id
             self.assertEqual(target_node_id, search_node_id)
-            test_hash *= 2
+            # increase test_hash (example: 1001 -> 2002)
+            test_hash += global_test_hash + 1
             
         passed = (n_search == n_found == n_matched)
         case_no = len(TestSearchBuilding.summary_rows) + 1
@@ -365,41 +380,10 @@ class TestSearchBuilding(unittest.TestCase):
             searched_key = node_searched_key.get(v_index_pos, "")
             csv_rows.append([idx, v.node_id, v.v_index, building_salt, v.hash, is_left_most, searched_key])
             
-        csv_path = os.path.join(TEST_SEARCH_BUILDING_CSV_DIR, "test_search_repeated_buidling_hash.csv")
+        csv_path = os.path.join(TEST_SEARCH_BUILDING_CSV_DIR, "test_search_repeated_building_hash.csv")
         write_csv(csv_path, csv_header, csv_rows)
         
 if __name__ == "__main__":
     unittest.main()
 
 
-"""
----- FOR CSV CREATION ----
-    description:
-        create csv of each test method result in "test/test_functions/result_report_csv/test_search_building_csv/"
-    for test "test_search_at_building_hash" must contains header:
-        "no.,node_id, j, salt,virtual_node_hash,searched_by_hash" (of all virtual nodes in test)
-        **  node_id, j, salt is from (node_id,j,salt) of each node
-            searched_by_hash = hash that's used to search and get this node_id as result (write over old value, leave empty if no seaching)
-    for test "test_search_not_at_building_hash" must contains header:
-        "no.,node_id, j, salt,virtual_node_hash,searched_by_hash" (of all virtual nodes in test)
-        **  node_id, j, salt is from (node_id,j,salt) of each node
-            searched_by_hash = hash that's used to search and get this node_id as result (write over old value, leave empty if no seaching)
-    for test "test_search_repeated_buidling_hash" must contains header: (of all virtual nodes in test)
-        "no.,node_id, j, salt,virtual_node_hash,is_left_most,searched_key
-        **  node_id, j, salt is from (node_id,j,salt) of each node
-            is_first = this node is first node of same-hash group (boolean)
-            searched_by = key that used to search to get this node_id result (write over old value, leave empty if no seaching)
-
----- after all test_method ----
-    description:
-        create csv file name "summary_search_building.csv" at "test/test_functions/result_report_csv/test_search_building_csv/" to summarize number of customer changed in each operation
-    summary test header:
-        "no.,test_detail,n_search,n_found,n_expect,passed"
-        **  n_searched is number of seaching method called per test 
-            n_found is number of all found result
-            n_matched is number of matched result (searching matched expected)
-            pass is boolean statement (n_search == n_found == n_matched)
----- console result printing ----
-    description: print result belong to summary_search_building.csv file on console
-
-"""

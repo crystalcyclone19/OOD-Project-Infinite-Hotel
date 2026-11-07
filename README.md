@@ -184,3 +184,8 @@ python test/test_all_functions.py
 3. **`test_3_search_building.py`**: ทดสอบฟังก์ชันการค้นหาอาคารและตรวจสอบตำแหน่งห้องพักของลูกค้า
 4. **`test_4_manage_building.py`**: ทดสอบระบบการจัดการอาคาร การเพิ่มและลดอาคารแบบ dynamic
 5. **`test_5_edge_case.py`**: ทดสอบกรณีขอบเขต ข้อมูลไม่สมบูรณ์ หรือกรณีข้อยกเว้นต่างๆ (Exception & Edge Cases)
+
+
+
+
+

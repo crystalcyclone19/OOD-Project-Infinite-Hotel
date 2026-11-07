@@ -161,14 +161,14 @@ class TestRoomConflict(unittest.TestCase):
         for c in range(1, c_max + 1):
             self._create_multiple_user(hotel, c, n_max)
         
-        # ดึงลูกค้าทั้งหมดจาก customer_tree
+        # get all customer from customer_tree
         all_customers = []
         hotel._get_all_customers(hotel.customer_tree.root, all_customers)
         
-        # จัดทำ index สำหรับเช็คว่า customer (c, s) ใดมีอยู่ใน tree บ้าง
+        # create index for checking customer (c, s)
         cust_map = {c.id: c for c in all_customers}
         
-        # สร้าง CSV สำหรับ test_room_no_conflict.csv
+        # create CSV for test_room_no_conflict.csv
         # Header: "no.,c, s, room_no, building_id, is_missing"
         csv_rows = []
         counter = 1
@@ -177,10 +177,10 @@ class TestRoomConflict(unittest.TestCase):
             for s in range(1, n_max + 1):
                 cust = cust_map.get((c, s))
                 if cust is not None:
-                    # ลูกค้ายังคงอยู่ในระบบ ไม่ได้ถูกเขียนทับ
+                    # customer is in tree.
                     csv_rows.append([counter, c, s, cust.room_no, cust.node_id, False])
                 else:
-                    # ลูกค้าสูญหาย (ถูกเขียนทับ)
+                    # customer is missing (not found in tree)
                     expected_room = hotel.calculate_room_no(c, s)
                     csv_rows.append([counter, c, s, expected_room, "", True])
                 counter += 1
@@ -188,7 +188,7 @@ class TestRoomConflict(unittest.TestCase):
         detail_csv_path = os.path.join(TEST_ROOM_CONFLICT_CSV_DIR, "test_room_no_conflict.csv")
         write_csv(detail_csv_path, ROOM_CONFLICT_HEADER, csv_rows)
         
-        # สรุปผลตัวเลข
+        # summary
         n_created = c_max * n_max
         n_existed = len(all_customers)
         n_missing = n_created - n_existed
@@ -206,31 +206,3 @@ if __name__ == "__main__":
     unittest.main()
 
 
-"""
----- FOR CSV CREATION ----
-    description:
-        create csv of test method result in "test/test_functions/result_report_csv/test_room_conflict_csv/"
-    create "test_room_no_conflict.csv" and it must contains header
-        no.,c, s, room_no, building_id, is_missing
-        **  c, s is from customer_id = (c,s)
-            is_missing is in case of when create customer and it \
-                overwrite on other customer, so some customer \
-                will be missing, if that missing customer exist put boolean true after it, if not put false
-    
-    ---- after all test_method ----
-    description:
-        create csv file name "summary_room_no_conflict.csv" at "test/test_functions/result_report_csv/test_room_conflict_csv/" to summarize number of customer changed in each operation
-    summary test header:
-        "no.,test_detail, n_c, n_s , n_created, n_existed, n_missing, passed"
-        **  n_c, n_s is c_max, s_max
-            n_created is number of expected customer when done creating (n_c * n_s)
-            n_existed is number of real customer in customer_tree (count after creating)
-            n_missing(repeated) is "n_created - n_exist"
-            pass is boolean statement (n_created = n_existed)
-            
-
----- console result printing ----
-    description: print result belong to 20 first row from "test/test_functions/result_report_csv/test_room_conflict_csv/summary_room_conflict.csv" file on console
-    thn show the result of "summary_room_no_conflict.csv"
-
-"""

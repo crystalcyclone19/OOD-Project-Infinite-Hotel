@@ -15,10 +15,7 @@ class Command(Enum):
     RemoveBuilding = -1
 
 # Constant
-V = 5
-building_number = 3
 c = 1
-n_max = 20
 building_salt = "b1"
 customer_salt = "c1"
 
@@ -28,7 +25,7 @@ TEST_MANAGE_BUILDING_CSV_DIR = os.path.join(RESULT_CSV_DIR, "test_manage_buildin
 
 BEFORE_AFTER_HEADER = ["no.", "hash", "c", "s", "building_id", "room_no_before", "building_id_after", "room_no_after", "is_affected"]
 DIFF_HEADER = ["no.", "hash", "c", "s", "building_id_before", "building_id_after", "is_affected"]
-EXAMPLE_HEADER = ["no.", "hash", "c", "s", "start_id", "after_add_4", "after_remove_2", "after_remove_3"]
+EXAMPLE_HEADER = ["no.", "hash", "c", "s", "start_id", "after_add_4", "after_remove_2", "after_remove_3", "after_add_2"]
 SUMMARY_HEADER = ["no.", "test_detail", "target_building", "n_affected", "n_min_expected", "passed"]
 
 def write_csv(path, header, rows):
@@ -88,7 +85,7 @@ class TestManageBuilding(unittest.TestCase):
 
         # 2. Console result printing:
         # 2.1 แสดงผลทุกแถวจาก test_operate_building_example.csv
-        example_csv_path = os.path.join(TEST_MANAGE_BUILDING_CSV_DIR, "test_operate_building_example", "test_operate_building_example.csv")
+        example_csv_path = os.path.join(TEST_MANAGE_BUILDING_CSV_DIR, "test_operate_building_example.csv")
         if os.path.isfile(example_csv_path):
             with open(example_csv_path, newline="", encoding="utf-8") as f:
                 reader = csv.reader(f)
@@ -110,10 +107,10 @@ class TestManageBuilding(unittest.TestCase):
     #             helper modules
     # ===========================================
     
-    def set_up(self) -> HotelSystem:
+    def set_up(self, V=1, n_building=3, n_max=10) -> HotelSystem:
         
         hotel = HotelSystem(V, building_salt, customer_salt)
-        for i in range(1, building_number + 1):
+        for i in range(1, n_building + 1):
             hotel.add_building(i)
         hotel.add_group_customer(c, 1, n_max)
         return hotel
@@ -163,6 +160,24 @@ class TestManageBuilding(unittest.TestCase):
             
             return rwb_dict
     
+    def get_building_data(self, hotel: HotelSystem) -> list:
+        
+        tree = hotel.building_tree.root
+        
+        def recursive_get_building(root, building_list):
+            # in-order traversal
+            if root is not None:
+                recursive_get_building(root.left, building_list)
+                # extract the customer object
+                if root.data is not None:
+                    building_list.append(root.data)
+                recursive_get_building(root.right, building_list)
+        
+        buildings = []
+        recursive_get_building(tree, buildings)
+        
+        return buildings
+    
     def print_customer_data(self, customer_dict: dict, title = ""):
         
         if title:
@@ -203,9 +218,7 @@ class TestManageBuilding(unittest.TestCase):
     def manage_building(self, hotel: HotelSystem, node_id: int, command = Command.AddBuilding):
         
         before_c = self.get_customer_data(hotel)
-        all_building_before = set()
-        for rb in before_c.values():
-            all_building_before.add(rb[1])
+        before_b = self.get_building_data(hotel)
         
         if command is Command.AddBuilding:
             moved = hotel.add_building(node_id)
@@ -215,69 +228,55 @@ class TestManageBuilding(unittest.TestCase):
             raise TypeError("Invalid command (Command: Enum)")
         
         after_c = self.get_customer_data(hotel)
-        all_building_after = set()
-        for rb in after_c.values():
-            all_building_after.add(rb[1])
+        after_b = self.get_building_data(hotel)
         
-        return before_c, after_c, len(all_building_before), len(all_building_after), moved
+        return before_c, after_c, before_b, after_b, moved
     
-    def _test_manage_building(self, hotel, target_id, command: Command = Command.AddBuilding, test_name: str = None, test_detail: str = None):
-        subfolder = os.path.join(TEST_MANAGE_BUILDING_CSV_DIR, test_name) if test_name else None
-        if subfolder:
-            os.makedirs(subfolder, exist_ok=True)
-
-        # เก็บ snapshot ก่อนดำเนินการ
+    def _test_manage_building(self, hotel,
+                                    target_id,
+                                    expected_chagned: int,
+                                    command: Command = Command.AddBuilding,
+                                    test_name: str = None,
+                                    test_detail: str = None):
+        # save before operating
         cust_list_before = []
         hotel._get_all_customers(hotel.customer_tree.root, cust_list_before)
-        before_state = {c.id: (c.hash, c.node_id, c.room_no) for c in cust_list_before}
+        before_state = {c.hash: (c.id, c.node_id, c.room_no) for c in cust_list_before}
 
-        before_c, after_c,\
-            before_b_count, after_b_count, \
-            moved = self.manage_building(hotel, target_id, command)
+        before_c, after_c, before_b, after_b, moved = self.manage_building(hotel, target_id, command)
         
-        # เก็บ snapshot หลังดำเนินการ
+        # save after operating
         cust_list_after = []
         hotel._get_all_customers(hotel.customer_tree.root, cust_list_after)
-        after_state = {c.id: (c.hash, c.node_id, c.room_no) for c in cust_list_after}
+        after_state = {c.hash: (c.id, c.node_id, c.room_no) for c in cust_list_after}
 
-        if moved is None:
-            b_delta = 0
-        else:
-            b_delta = command.value
+        # check changed building number state
+        b_delta = len(after_b) - len(before_b)
+        self.assertEqual(expected_chagned, b_delta)
         
-        self.assertEqual(len(before_c), len(after_c))
-        self.assertEqual(before_b_count + b_delta, after_b_count)
-        
-        # ตรวจสอบ moved customers
+        # validate moved customers
         moved_dict = self.get_customer_data(moved) if moved is not None else {}
         self.check_moved_customer_room_building(before=before_c, after=after_c, moved=moved_dict)
 
-        # สร้าง CSV รายละเอียดสำหรับ test 1 - 4
-        if subfolder and test_detail is not None:
-            before_rows = []
-            after_rows = []
+        # create CSV details for test 1 - 4
+        if test_name and test_detail is not None:
             diff_rows = []
 
             n_affected = 0
-            # เรียงตาม customer id (c, s)
+            # sort by customer id (c, s)
             sorted_keys = sorted(before_state.keys())
-            for idx, cid in enumerate(sorted_keys, start=1):
-                c_hash, b_before, r_before = before_state[cid]
-                _, b_after, r_after = after_state[cid]
+            for idx, c_hash in enumerate(sorted_keys, start=1):
+                cid, b_before, r_before = before_state[c_hash]
+                _, b_after, r_after = after_state[c_hash]
                 is_affected = (b_before != b_after or r_before != r_after)
                 if is_affected:
                     n_affected += 1
 
-                # before.csv
-                before_rows.append([idx, c_hash, cid[0], cid[1], b_before, r_before, b_after, r_after, is_affected])
-                # after.csv
-                after_rows.append([idx, c_hash, cid[0], cid[1], b_after, r_before, b_after, r_after, is_affected])
-                # diffrence.csv: "no.,hash,c,s,building_id_before,building_id_after,is_affected"
+                # diffrence: "no.,hash,c,s,building_id_before,building_id_after,is_affected"
                 diff_rows.append([idx, c_hash, cid[0], cid[1], b_before, b_after, is_affected])
 
-            write_csv(os.path.join(subfolder, "before.csv"), BEFORE_AFTER_HEADER, before_rows)
-            write_csv(os.path.join(subfolder, "after.csv"), BEFORE_AFTER_HEADER, after_rows)
-            write_csv(os.path.join(subfolder, "diffrence.csv"), DIFF_HEADER, diff_rows)
+            csv_path = os.path.join(TEST_MANAGE_BUILDING_CSV_DIR, f"{test_name}.csv")
+            write_csv(csv_path, DIFF_HEADER, diff_rows)
 
             n_min_expected = len(moved) if moved is not None else 0
             passed = (n_affected == n_min_expected)
@@ -293,81 +292,90 @@ class TestManageBuilding(unittest.TestCase):
     
     # test 1: Try add non-existing building. Check for matching all moved customer
     def test_add_building(self):
-        hotel = self.set_up()
+        hotel = self.set_up( V=10, n_building=3, n_max=20 )
         self._test_manage_building(
             hotel, 4, command=Command.AddBuilding,
             test_name="test_add_building",
-            test_detail="add non-existing building"
+            test_detail="add non-existing building",
+            expected_chagned=1
         )
         
     # test 2: Try add existing building. Program should reject and has no customer changed.
     def test_add_existing_building(self):
-        hotel = self.set_up()
+        hotel = self.set_up( V=10, n_building=3, n_max=20 )
         self._test_manage_building(
             hotel, 1, command=Command.AddBuilding,
             test_name="test_add_existing_building",
-            test_detail="add existing building"
+            test_detail="add existing building",
+            expected_chagned=0
         )
         
     # test 3: Try remove existing building. Check for matching all moved customer
     def test_remove_building(self):
-        hotel = self.set_up()
+        hotel = self.set_up( V=10, n_building=3, n_max=20 )
         self._test_manage_building(
             hotel, 1, command=Command.RemoveBuilding,
             test_name="test_remove_building",
-            test_detail="remove existing building"
+            test_detail="remove existing building",
+            expected_chagned=-1
         )
         
     # test 4: Try remove non-existing building. Program should reject and has no customer changed.
     def test_remove_non_existing_building(self):
-        hotel = self.set_up()
+        hotel = self.set_up( V=10, n_building=3, n_max=20 )
         self._test_manage_building(
             hotel, 4, command=Command.RemoveBuilding,
             test_name="test_remove_non_existing_building",
-            test_detail="remove non-existing building"
+            test_detail="remove non-existing building",
+            expected_chagned=0
         )
     
     # test 5: Try add and remove existing building to express multi-operations in row
     def test_operate_building_example(self):
-        hotel = self.set_up()
-        subfolder = os.path.join(TEST_MANAGE_BUILDING_CSV_DIR, "test_operate_building_example")
-        os.makedirs(subfolder, exist_ok=True)
+        hotel = self.set_up( V=1, n_building=3, n_max=10 )
 
-        # 0. สถานะตั้งต้น (start)
+        # 0. initial state (start)
         cust_list = []
         hotel._get_all_customers(hotel.customer_tree.root, cust_list)
-        start_state = {c.id: (c.hash, c.node_id) for c in cust_list}
+        start_state = {c.hash: (c.id, c.node_id) for c in cust_list}
 
         # 1. after_add_4
-        self._test_manage_building(hotel, 4, command=Command.AddBuilding)
+        self._test_manage_building(hotel, 4, command=Command.AddBuilding, expected_chagned=1)
         cust_list_4 = []
         hotel._get_all_customers(hotel.customer_tree.root, cust_list_4)
-        state_add_4 = {c.id: c.node_id for c in cust_list_4}
+        state_add_4 = {c.hash: c.node_id for c in cust_list_4}
 
         # 2. after_remove_2
-        self._test_manage_building(hotel, 2, command=Command.RemoveBuilding)
+        self._test_manage_building(hotel, 2, command=Command.RemoveBuilding, expected_chagned=-1)
         cust_list_2 = []
         hotel._get_all_customers(hotel.customer_tree.root, cust_list_2)
-        state_rem_2 = {c.id: c.node_id for c in cust_list_2}
+        state_rem_2 = {c.hash: c.node_id for c in cust_list_2}
 
         # 3. after_remove_3
-        self._test_manage_building(hotel, 3, command=Command.RemoveBuilding)
+        self._test_manage_building(hotel, 3, command=Command.RemoveBuilding, expected_chagned=-1)
         cust_list_3 = []
         hotel._get_all_customers(hotel.customer_tree.root, cust_list_3)
-        state_rem_3 = {c.id: c.node_id for c in cust_list_3}
+        state_rem_3 = {c.hash: c.node_id for c in cust_list_3}
 
-        # สร้างไฟล์ test_operate_building_example.csv
-        # "no.,hash,c,s,start_id, after_add_4, after_remove_2, after_remove_3"
+        # 4. after_add_2
+        self._test_manage_building(hotel, 2, command=Command.AddBuilding, expected_chagned=1)
+        cust_list_add_2 = []
+        hotel._get_all_customers(hotel.customer_tree.root, cust_list_add_2)
+        state_add_2 = {c.hash: c.node_id for c in cust_list_add_2}
+
+        # create test_operate_building_example.csv
+        # "no.,hash,c,s,start_id, after_add_4, after_remove_2, after_remove_3, after_add_2"
         ex_rows = []
         sorted_keys = sorted(start_state.keys())
-        for idx, cid in enumerate(sorted_keys, start=1):
-            c_hash, start_id = start_state[cid]
-            after_4 = state_add_4[cid]
-            after_2 = state_rem_2[cid]
-            after_3 = state_rem_3[cid]
-            ex_rows.append([idx, c_hash, cid[0], cid[1], start_id, after_4, after_2, after_3])
+        for idx, c_hash in enumerate(sorted_keys, start=1):
+            cid, start_id = start_state[c_hash]
+            after_4 = state_add_4[c_hash]
+            after_2 = state_rem_2[c_hash]
+            after_3 = state_rem_3[c_hash]
+            after_add2_id = state_add_2[c_hash]
+            ex_rows.append([idx, c_hash, cid[0], cid[1], start_id, after_4, after_2, after_3, after_add2_id])
 
-        example_csv_path = os.path.join(subfolder, "test_operate_building_example.csv")
+        example_csv_path = os.path.join(TEST_MANAGE_BUILDING_CSV_DIR, "test_operate_building_example.csv")
         write_csv(example_csv_path, EXAMPLE_HEADER, ex_rows)
         
     
@@ -375,54 +383,3 @@ if __name__ == "__main__":
     unittest.main()
 
 
-"""
----- FOR CSV CREATION ----
-    description:
-        create subfolder of each test method result in "test/test_functions/result_report_csv/test_manage_building_csv/"
-        each subfolder must contains
-        1. before operation as before.csv
-        2. after operation as after.csv
-        3. before+after operation as diffrence.csv
-
-    for before.csv and after.csv header:
-        "no.,hash,c,s,building_id,room_no_before,building_id_after,room_no_after,is_affected"
-        **  c,s is from customer_id = (c,s)
-            building_id_before,room_no_before is before add/delete building operation of that customer
-            building_id_after,room_no_after is after add/delete building operation of that customer
-            is_affected is = true when customer changed their building_id or room_no, if not = false (boolean)
-    for after.csv header:
-
-    for diffrence.csv header:
-        "no.,hash,c,s,building_id_before,building_id_after,is_affected"
-        **  c,s is from customer_id = (c,s)
-            building_id_before,room_no_before is before add/delete building operation of that customer
-            building_id_after,room_no_after is after add/delete building operation of that customer
-            is_affected is = true when customer changed their building_id or room_no, if not = false (boolean)
-
-    special only for "test_operate_building_example.csv" instead of normal csv format requirement. create only this new ones
-    named ".csv" and it's header is:
-        "no.,hash,c,s,start_id, after_add_4, after_remove_2, after_remove_3"
-        **  c,s is from customer_id = (c,s)
-            start_id is start customer's node_id before any operation
-            after_add_4 is current customer's node_id when operation add bulding 4
-            after_remove_2 is current customer's node_id when operation remove bulding 2
-            after_remove_3 is current customer's node_id when operation remove bulding 3
-
-
----- after all test_method ----
-    description:
-        create csv file name "summary_manage_building.csv" at "test/test_functions/result_report_csv/test_manage_building/" to summarize number of customer changed in each operation
-    summary test header:
-        "no.,test_detail,target_building, n_affected, n_min_expected passed"
-        **  target_building is target building in operation (can be successful or unsuccessful)
-            n_affected is number of customer that was changed thier building_id
-            n_min_expected is number of customer that expected to move when
-                1. new building (virtual_node in ring) was added before their old next building (virtual_node in ring)
-                2. thier old building was removed and have to move to next building instead
-            passed is boolean statement if only customer that should be affected
-        ** test_operate_building_example.csv will be exclude from this summary
-
----- console result printing ----
-    description: print all row of customer from test_operate_building_example.csv to see example of add and remove buliding
-        then, print result belong to summary_add_customer.csv file on console
-"""
