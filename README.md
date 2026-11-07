@@ -7,8 +7,8 @@
 ## สารบัญ
 - [ข้อกำหนดเบื้องต้นและการติดตั้ง (Prerequisites & Installation)](#-ข้อกำหนดเบื้องต้นและการติดตั้ง)
 - [โครงสร้างโฟลเดอร์ (Directory Structure)](#โครงสร้างโฟลเดอร์ที่สำคัญ)
-- [7.2 System & Algorithm Tests](#72-system--algorithm-tests)
-- [9.2 Unit Tests & Function Verification](#-92-unit-tests--function-verification)
+- [System & Algorithm Tests](#72-system--algorithm-tests)
+- [Unit Tests & Function Verification](#-92-unit-tests--function-verification)
 
 ---
 
@@ -68,9 +68,9 @@ OOD-Project-Infinite-Hotel/
 
 ---
 
-## 7.2 System & Algorithm Tests
+## System & Algorithm Tests
 
-การทดสอบประสิทธิภาพเชิงเปรียบเทียบระหว่าง Consistent Hashing และ Hash Mod N ในสถานการณ์ต่างๆ
+การทดสอบประสิทธิภาพเชิงเปรียบเทียบระหว่าง Consistent Hashing และ Hash Mod N ในสถานการณ์ต่างๆ ตามโจทย์ข้อ 7
 ในการรันฟังก์ชันต่างๆ ต้องเข้าไปที่โฟลเดอร์ `OOD-Project` ก่อน จึงจะสามารถรันด้วย Command ด้านล่างได้
 
 ```bash
@@ -141,9 +141,9 @@ Test C บันทึกผลลัพธ์เฉพาะ CSV : `CSV/test_C_
 
 ---
 
-## 🧪 9.2 Unit Tests & Function Verification
+## Unit Tests & Function Verification
 
-การทดสอบฟังก์ชันการทำงานพื้นฐาน การจัดการข้อมูล และการรองรับกรณีขอบเขต (Edge Cases)
+การทดสอบฟังก์ชันการทำงานพื้นฐาน การจัดการข้อมูล และการรองรับกรณีขอบเขต (Edge Cases) ตามโจทย์ข้อ 9.2
 
 ### คำสั่งสำหรับรันการทดสอบ Unit Test ทั้งหมด:
 รันจากโฟลเดอร์ `OOD-Project` (สคริปต์ค้นหาไฟล์ `test_*.py` ใน `test/test_functions` จาก path สัมพัทธ์)
