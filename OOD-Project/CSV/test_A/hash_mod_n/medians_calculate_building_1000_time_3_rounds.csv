@@ -6,4 +6,4 @@
 # salt: ["0", "1", "2"]
 # method: "hash_mod_n"
 total_round,medians(us)
-3,0.23380000129691325
+3,0.7555999982287176

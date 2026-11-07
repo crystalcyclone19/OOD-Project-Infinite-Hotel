@@ -79,6 +79,16 @@ CANDIDATES = {
 }
 
 
+def _check_points(ks, min_k):
+    """A fit y = a*f(K) + b has 2 unknowns, so it needs at least 3 points
+    (with only 2 the line passes through both and R2 is always 1).
+    Test A uses K = 1,000 / 10,000 / 100,000, so 3 points is enough."""
+    if len(ks) < 3:
+        raise ValueError(f"need at least 3 points with K >= {min_k:g}, got {len(ks)}")
+    if len(set(ks)) < 2:
+        raise ValueError("need at least 2 different K values to fit a curve")
+
+
 @dataclass
 class Fit:
     model: str            # e.g. "ln K"
@@ -119,8 +129,7 @@ def fit_metric(ks: Sequence[float], ys: Sequence[float], metric: str,
     if metric not in CANDIDATES:
         raise ValueError(f"metric must be one of {list(CANDIDATES)}")
     pts = [(k, y) for k, y in zip(ks, ys) if k >= min_k]
-    if len(pts) < 4:
-        raise ValueError(f"need >= 4 points with K >= {min_k}, got {len(pts)}")
+    _check_points([k for k, _ in pts], min_k)
     k_use, y_use = zip(*pts)
     fits = [_fit_one(k_use, y_use, m) for m in CANDIDATES[metric]]
     best = fits[0]
@@ -196,8 +205,7 @@ def fit_log_k_log_m_multi(ks, ys, ms=None, min_k=1000):
     if ms is None or isinstance(ms, (int, float)):
         ms = [ms if ms is not None else 1] * len(ks)
     pts = [(k, m_, y) for k, m_, y in zip(ks, ms, ys) if k >= min_k]
-    if len(pts) < 4:
-        raise ValueError("need at least 4 points with K >= min_k")
+    _check_points([k for k, _, _ in pts], min_k)
     n = len(pts)
     lk = [math.log(k) for k, _, _ in pts]
     lm = [math.log(m_) for _, m_, _ in pts]
@@ -213,7 +221,8 @@ def fit_log_k_log_m_multi(ks, ys, ms=None, min_k=1000):
     X = [[lk[i], lm[i], 1.0] for i in range(n)]
     A = [[sum(X[i][r] * X[i][c] for i in range(n)) for c in range(3)] for r in range(3)]
     bb = [sum(X[i][r] * y[i] for i in range(n)) for r in range(3)]
-    sol = _solve(A, bb)
+    # the full model has 3 unknowns: with only 3 points it would fit exactly (R2 = 1, meaningless)
+    sol = _solve(A, bb) if n >= 4 else None
     if sol is not None:
         a, c, d = sol
         pred = [a * lk[i] + c * lm[i] + d for i in range(n)]
@@ -241,8 +250,7 @@ def fit_log_k_log_m(ks, ys, M, min_k=1000):
     For runs with several different M values use fit_log_k_log_m_multi().
     """
     pts = [(k, y) for k, y in zip(ks, ys) if k >= min_k]
-    if len(pts) < 4:
-        raise ValueError("need at least 4 points with K >= min_k")
+    _check_points([k for k, _ in pts], min_k)
     lk = [math.log(k) for k, _ in pts]
     y = [v for _, v in pts]
     n = len(y)

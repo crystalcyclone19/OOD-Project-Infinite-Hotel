@@ -7,4 +7,4 @@
 # salt: "1"
 # method: "consistant_hashing"
 round,time usage(us)
-2,23.470399999496294
+2,5.066599995188881
