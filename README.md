@@ -7,8 +7,8 @@
 ## สารบัญ
 - [ข้อกำหนดเบื้องต้นและการติดตั้ง (Prerequisites & Installation)](#-ข้อกำหนดเบื้องต้นและการติดตั้ง)
 - [โครงสร้างโฟลเดอร์ (Directory Structure)](#โครงสร้างโฟลเดอร์ที่สำคัญ)
-- [System & Algorithm Tests](#72-system--algorithm-tests)
-- [Unit Tests & Function Verification](#-92-unit-tests--function-verification)
+- [System & Algorithm Tests](#system--algorithm-tests)
+- [Unit Tests & Function Verification](#unit-tests--function-verification)
 
 ---
 
