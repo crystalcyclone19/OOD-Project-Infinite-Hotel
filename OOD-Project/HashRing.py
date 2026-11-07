@@ -98,4 +98,3 @@ class HashModN:
         node_index = guest_hash % len(self.building_list)
         return self.building_list[node_index]
 
-

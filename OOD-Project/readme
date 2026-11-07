@@ -4,14 +4,30 @@ Command
 7.2 Test 
  Test A:
      Command: python -m test.test_A 
-     Out put: .png in graph folder,Terminal shows state of process
+     Output: .png in graph folder,Terminal shows state of process
      Info: Expect 4 pictures: (1)Test_A_assing_search_ordering_varinace.png, 
                              (2)Test_A_assing_search_ordering.png,
                              (3)Test_A_memory_variance.png
                              (4)Test_A_memory.png
  Test B:
      Command: python -m test.test_B.test_B
-     Out put: Termianl shows state of process and the results, Window shows graphs
+     Output: .csv in CSV/CSV_TestB folder, .png in GRAPG_TestB/graph folder, Terminal shows state of process and execution progress
+     Info: 
+         1. CSV Files (in CSV/CSV_TestB/):
+            (1) benchmark_results_bsalt_0_csalt_0.csv
+            (2) benchmark_results_bsalt_1_csalt_1.csv
+            (3) benchmark_results_bsalt_2_csalt_2.csv
+            (4) relocation_moves_bsalt_0_csalt_0.csv
+            (5) relocation_moves_bsalt_1_csalt_1.csv
+            (6) relocation_moves_bsalt_2_csalt_2.csv
+            (7) customers_sample.csv
+         2. Graph Pictures (in GRAPG_TestB/graph/):
+            (1) grid_metrics_bsalt_0_csalt_0.png
+            (2) grid_metrics_bsalt_1_csalt_1.png
+            (3) grid_metrics_bsalt_2_csalt_2.png
+            (4) summary_stats_bsalt_0_csalt_0.png
+            (5) summary_stats_bsalt_1_csalt_1.png
+            (6) summary_stats_bsalt_2_csalt_2.png
  Test C:
      Command: python -m test.test_C
-     Out put: Termianl shows state of process and the results, Window shows graphs
+     Output: Termianl shows state of process and the results, Window shows graphs

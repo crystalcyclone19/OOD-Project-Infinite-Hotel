@@ -211,4 +211,5 @@ class HotelSystem:
         # sort by node_id ascending, then room_no ascending (numeric)
         buildings.sort(key=lambda b: (b.building_id, b.room_no))
         return buildings
-    
+
+

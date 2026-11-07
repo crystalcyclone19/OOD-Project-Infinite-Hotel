@@ -3,6 +3,7 @@ import sys
 import time
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 # 1. กำหนด Root Directory
 
@@ -17,14 +18,20 @@ if PROJECT_ROOT not in sys.path:
 from .generate_mock_data_csv import generate_mock_data # Claude told me : )
 from hotel_sys import HotelSystem
 # from load_data_to_system import load_data_to_system
-from .load_data_to_system import load_data_to_system # Claude told me : )
+from .load_data_to_system import load_data_to_system, export_sample_customers # Claude told me : )
 
 
 
 def loop_test_2_to_20(hash_type: str, function: str, K: int, building_salt: str, customer_salt: str):
+    CSV_DIR = os.path.join(PROJECT_ROOT, "CSV", "CSV_TestB")
+    os.makedirs(CSV_DIR, exist_ok=True)
+
     building_counts = []
     relocation_rates = []
     execution_times = []
+
+    all_benchmark_rows = []
+    all_moves_rows = []
 
     print('=' * 60)
     print(f"Total guests = {K} คน | Salt: B='{building_salt}', C='{customer_salt}'")
@@ -44,6 +51,7 @@ def loop_test_2_to_20(hash_type: str, function: str, K: int, building_salt: str,
                 hash_type=hash_type
             )
             load_data_to_system(system)
+            export_sample_customers(system, filename="customers_sample.csv")
 
             start_time = time.perf_counter()
             if function == "add_building":
@@ -62,6 +70,64 @@ def loop_test_2_to_20(hash_type: str, function: str, K: int, building_salt: str,
         building_counts.append(N)
         relocation_rates.append(rate)
         execution_times.append(median_time)
+
+        # เก็บข้อมูล Benchmark
+        benchmark_row = {
+            "hash_type": hash_type,
+            "function": function,
+            "building_salt": building_salt,
+            "customer_salt": customer_salt,
+            "K_guests": K,
+            "N_buildings": N,
+            "run_0_time_ms": times[0] * 1000,
+            "run_1_time_ms": times[1] * 1000,
+            "run_2_time_ms": times[2] * 1000,
+            "median_time_ms": median_time * 1000,
+            "moved_count": len(move_total_last),
+            "relocation_rate_pct": rate
+        }
+        all_benchmark_rows.append(benchmark_row)
+
+        # เก็บรายการย้ายแขก
+        if move_total_last:
+            for move in move_total_last:
+                all_moves_rows.append({
+                    "hash_type": hash_type,
+                    "function": function,
+                    "building_salt": building_salt,
+                    "customer_salt": customer_salt,
+                    "N_buildings": N,
+                    "customer_id": move.id,
+                    "room_no": move.room_no,
+                    "old_node_id": move.old_node_id,
+                    "new_node_id": move.new_node_id
+                })
+
+    # 📌 ตั้งชื่อไฟล์ CSV แยกตามชุด Salt อัตโนมัติ
+    benchmark_file = os.path.join(CSV_DIR, f"benchmark_results_bsalt_{building_salt}_csalt_{customer_salt}.csv")
+    moves_file = os.path.join(CSV_DIR, f"relocation_moves_bsalt_{building_salt}_csalt_{customer_salt}.csv")
+
+    # บันทึก Benchmark (เขียนต่อท้ายเมื่อวนครบ 4 เคสย่อยใน Salt เดียวกัน)
+    df_benchmark = pd.DataFrame(all_benchmark_rows)
+    df_benchmark.to_csv(
+        benchmark_file, 
+        mode='a', 
+        header=not os.path.exists(benchmark_file), 
+        index=False, 
+        encoding='utf-8-sig'
+    )
+
+    # บันทึก รายการย้ายแขก
+    df_moves = pd.DataFrame(all_moves_rows)
+    df_moves.to_csv(
+        moves_file, 
+        mode='a', 
+        header=not os.path.exists(moves_file), 
+        index=False, 
+        encoding='utf-8-sig'
+    )
+
+    print(f"[CSV Export] เขียนข้อมูล {hash_type}:{function} ลงในชุดไฟล์ {building_salt}_{customer_salt} เรียบร้อย!")
 
     # คำนวณสถิติ
     move_mean_rate = np.mean(relocation_rates)
@@ -241,7 +307,7 @@ if __name__ == "__main__":
     K = 10000
 
     # 1. กำหนดโฟลเดอร์สำหรับเก็บรูปภาพอัตโนมัติ
-    output_dir = "output_plots"
+    output_dir = os.path.join(PROJECT_ROOT, "graph", "GRAPH_TestB")
     os.makedirs(output_dir, exist_ok=True)
 
     salt_configs = [
@@ -298,4 +364,4 @@ if __name__ == "__main__":
         print(f"[Auto-Save] บันทึกไฟล์เรียบร้อย: {stats_filepath}")
 
         # สั่งแสดงผลกราฟขึ้นหน้าจอ
-        plt.show()
+        # plt.show()
