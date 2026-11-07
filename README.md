@@ -7,12 +7,12 @@
 ## สารบัญ
 - [ข้อกำหนดเบื้องต้นและการติดตั้ง (Prerequisites & Installation)](#-ข้อกำหนดเบื้องต้นและการติดตั้ง)
 - [โครงสร้างโฟลเดอร์ (Directory Structure)](#โครงสร้างโฟลเดอร์ที่สำคัญ)
-- [7.2 System & Algorithm Tests](#72-system--algorithm-tests)
-- [9.2 Unit Tests & Function Verification](#-92-unit-tests--function-verification)
+- [System & Algorithm Tests (follow 7)](#72-system--algorithm-tests)
+- [Unit Tests & Function Verification (follow 9.2)](#-92-unit-tests--function-verification)
 
 ---
 
-## 🛠 ข้อกำหนดเบื้องต้นและการติดตั้ง
+## ข้อกำหนดเบื้องต้นและการติดตั้ง
 
 1. **Python:** ภาษา Python เวอร์ชัน 3.8 ขึ้นไป
 2. **การติดตั้ง Dependencies:**
@@ -49,7 +49,7 @@ OOD-Project-Infinite-Hotel/
 
 ---
 
-## 7.2 System & Algorithm Tests
+## System & Algorithm Tests (follow 7)
 
 การทดสอบประสิทธิภาพเชิงเปรียบเทียบระหว่าง Consistent Hashing และ Hash Mod N ในสถานการณ์ต่างๆ
 ในการรันฟังก์ชันต่างๆ ต้องเข้าไปที่โฟลเดอร์โปรเจกต์ OOD-Project ก่อน จึงจะสามารถรันด้วย Command ด้านล่างได้
@@ -64,7 +64,7 @@ cd OOD-Project
 | **Test B** | `python -m test.test_B.test_B` | แสดงสถานะและผลลัพธ์บน Terminal พร้อมเปิดหน้าต่าง Pop-up แสดงกราฟเปรียบเทียบ สร้างรูปกราฟ 6 ภาพในโฟลเดอร์ `graph/GRAPH_TestB/` และไฟล์ CSV ในโฟลเดอร์ `CSV/CSV_TestB/` |
 | **Test C** | `python -m test.test_C` | แสดงสถานะและผลลัพธ์บน Terminal พร้อมเปิดหน้าต่าง Pop-up แสดงกราฟเปรียบเทียบ และไฟล์ CSV ในโฟลเดอร์ `CSV/` |
 
-### รายละเอียดผลลัพธ์ Test A
+### รายละเอียดผลลัพธ์ Test A 
 
 #### 📄 1. CSV Files (ตำแหน่งจัดเก็บ: `CSV/test_A/` แยกตาม `consistant_hashing/` และ `hash_mod_n/`)
 สำหรับทั้ง 2 อัลกอริทึม (`consistant_hashing` และ `hash_mod_n`) ระบบจะสร้างโครงสร้างไฟล์ CSV ดังนี้:
@@ -127,7 +127,7 @@ Test C บันทึกผลลัพธ์เฉพาะ CSV : `CSV/test_C_
 
 ---
 
-## 🧪 9.2 Unit Tests & Function Verification
+## Unit Tests & Function Verification (follow 9.2)
 
 การทดสอบฟังก์ชันการทำงานพื้นฐาน การจัดการข้อมูล และการรองรับกรณีขอบเขต (Edge Cases)
 
