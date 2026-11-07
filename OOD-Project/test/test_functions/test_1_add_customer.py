@@ -90,6 +90,8 @@ class TestAddCustomer(unittest.TestCase):
     def get_customer_rows(self, hotel: HotelSystem) -> list:
         customer_list = []
         hotel._get_all_customers(hotel.customer_tree.root, customer_list)
+        # Sorted by c and s (customer.id = (c, s))
+        customer_list.sort(key=lambda cust: cust.id)
         rows = []
         for i, c in enumerate(customer_list, start=1):
             rows.append([i, c.hash, c.id[0], c.id[1], c.node_id, c.room_no])
@@ -280,9 +282,9 @@ class TestAddCustomer(unittest.TestCase):
     # test 2: add single customer with difference channel
     def test_add_customer_new_channel(self):
         def action(hotel):
-            self.assertTrue(hotel.add_customer(5, 21))
-            self.assertTrue(hotel.add_customer(5, 22))
-            self.assertTrue(hotel.add_customer(5, 23))
+            self.assertTrue(hotel.add_customer(2, 1))
+            self.assertTrue(hotel.add_customer(5, 2))
+            self.assertTrue(hotel.add_customer(10, 3))
 
         self.run_case_with_report(
             test_name="test_add_customer_new_channel",
@@ -307,8 +309,8 @@ class TestAddCustomer(unittest.TestCase):
     # test 4: add multiple customers with difference channel
     def test_add_group_customer_new_channel(self):
         def action(hotel):
-            self.assertTrue(hotel.add_group_customer(5, 21, 5))
-            self.assertTrue(hotel.add_group_customer(5, 31, 10))
+            self.assertTrue(hotel.add_group_customer(2, 1, 5))
+            self.assertTrue(hotel.add_group_customer(5, 8, 10))
 
         self.run_case_with_report(
             test_name="test_add_group_customer_new_channel",
@@ -320,9 +322,9 @@ class TestAddCustomer(unittest.TestCase):
     # test 5: add repeated single customer
     def test_add_repeated_customer(self):
         def action(hotel):
-            self.assertFalse(hotel.add_customer(initial_channel, 1))
-            self.assertFalse(hotel.add_customer(initial_channel, 15))
-            self.assertFalse(hotel.add_customer(initial_channel, 20))
+            self.assertFalse(hotel.add_customer(1, 1))
+            self.assertFalse(hotel.add_customer(1, 15))
+            self.assertFalse(hotel.add_customer(1, 20))
 
         self.run_case_with_report(
             test_name="test_add_repeated_customer",
@@ -334,9 +336,12 @@ class TestAddCustomer(unittest.TestCase):
     # test 6: add repeated multiple customers
     def test_add_repeated_group_customer(self):
         def action(hotel):
-            self.assertFalse(hotel.add_group_customer(initial_channel, 27, 5))  # tail overlapping (ทับ 31)
-            self.assertFalse(hotel.add_group_customer(initial_channel, 20, 5))  # head overlapping (ทับ 20)
-            self.assertFalse(hotel.add_group_customer(initial_channel, 46, 5))  # middle overlapping (ทับ 50)
+            # tail overlapping (ทับ 31)
+            self.assertFalse(hotel.add_group_customer(1, 27, 5))
+            # head overlapping (ทับ 20)
+            self.assertFalse(hotel.add_group_customer(1, 20, 5))
+            # middle overlapping (ทับ 50)
+            self.assertFalse(hotel.add_group_customer(1, 46, 10))
 
         self.run_case_with_report(
             test_name="test_add_repeated_group_customer",
@@ -349,28 +354,3 @@ class TestAddCustomer(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-"""
----- FOR CSV CREATION ----
-    description:
-        create subfolder of each test method result in "test/test_functions/result_report_csv/test_add_customer_csv/"
-        each subfolder must contains
-        1. before operation as before.csv
-        2. after operation as after.csv
-    each test result header:
-        "no.,hash,c,s,building_id,room_no"
-
----- after all test_method ----
-    description:
-        create csv file name "summary_add_customer.csv" at "test/test_functions/result_report_csv/test_add_customer_csv/" to summarize number of customer changed in each operation
-    summary test header:
-        "no.,test_detail,n_before,n_after,n_changed,n_expected,passed"
-        **  n_before is number of all customer in tree before operation
-            n_after is number of all customer in tree after operation
-            n_changed is n_after - n_before
-            n_expected is expected "n_after - n_before" number
-            room_changed is number of customer that changed their room or building
-            pass is boolean statement (n_changed == n_expected and room_changed == 0)
----- console result printing ----
-    description: print result belong to summary_add_customer.csv file on console
-
-"""
