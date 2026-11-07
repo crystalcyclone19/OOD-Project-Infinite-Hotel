@@ -6,4 +6,4 @@
 # salt: ["0", "1", "2"]
 # method: "consistant_hashing"
 total_round,medians(us)
-3,14.86280000062834
+3,5.066599995188881

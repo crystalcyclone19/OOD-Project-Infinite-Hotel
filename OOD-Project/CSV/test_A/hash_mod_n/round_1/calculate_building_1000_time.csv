@@ -7,4 +7,4 @@
 # salt: "0"
 # method: "hash_mod_n"
 round,time usage(us)
-1,0.2514000007067807
+1,0.7555999982287176
