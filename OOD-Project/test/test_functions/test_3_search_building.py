@@ -336,7 +336,8 @@ class TestSearchBuilding(unittest.TestCase):
         n_found = 0
         n_matched = 0
         
-        # define hash for testing (start with test_hash=1001, first virtual node's hash < test_hash < second virtual node's hash)
+        # define hash for testing (start with test_hash=1001, 
+        # first virtual node's hash < test_hash < second virtual node's hash)
         test_hash = global_test_hash + 1
         # start loop searching and testing
         for i in range(building_number_B + 1):

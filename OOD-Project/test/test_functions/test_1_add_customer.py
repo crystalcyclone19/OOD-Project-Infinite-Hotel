@@ -167,100 +167,6 @@ class TestAddCustomer(unittest.TestCase):
         
         return customer_dict
 
-    def check_customer_changed_room_building(self, before: dict, after: dict):
-        try:
-            for customer_id in before.keys():
-                
-                rb_before = before[customer_id]
-                rb_after = after[customer_id]
-                
-                if rb_before != rb_after:
-                    raise ValueError(f"Found room_no or building_id changed: {rb_before} -> {rb_after}")
-        except ValueError as error:
-            raise ValueError(error)
-
-    def _test_add_customer(self, channel:int):
-        
-        hotel = self.set_up()
-        
-        # test 1: Try add customer
-        
-        before = self.get_customer_data(hotel)
-        
-        self.assertTrue(hotel.add_customer(channel,21))
-        self.assertTrue(hotel.add_customer(channel,22))
-        self.assertTrue(hotel.add_customer(channel,23))
-                        
-        after = self.get_customer_data(hotel)
-        
-        self.assertEqual(len(before) + 3, len(after))
-
-        # test 2: Check for changed old customers room_no or building_id
-        
-        self.check_customer_changed_room_building(before, after)
-        
-    def _test_add_repeated_customer(self):
-                
-        hotel = self.set_up()
-        
-        # test 1: Try add repeated customers
-                
-        before = self.get_customer_data(hotel)
-        
-        self.assertFalse(hotel.add_customer(initial_channel,1))
-        self.assertFalse(hotel.add_customer(initial_channel,15))
-        self.assertFalse(hotel.add_customer(initial_channel,20))
-        
-        after = self.get_customer_data(hotel)
-        
-        self.assertEqual(len(before), len(after))
-        
-        # test 2: Check for changed old customers room_no or building_id
-                
-        self.check_customer_changed_room_building(before, after)
-         
-    def _test_add_group_customer(self, channel:int):
-            
-        hotel = self.set_up()
-        
-        # test 1: Try add customers
-        
-        before = self.get_customer_data(hotel)
-        
-        self.assertTrue(hotel.add_group_customer(channel, 21, 5))
-        self.assertTrue(hotel.add_group_customer(channel, 31, 10))
-                        
-        after = self.get_customer_data(hotel)
-        
-        self.assertEqual(len(before) + 15, len(after))
-
-        # test 2: Check for changed old customers room_no or building_id
-        
-        self.check_customer_changed_room_building(before, after)
-        
-    def _test_add_repeated_group_customer(self):
-        
-        hotel = self.set_up()
-        
-        hotel.add_group_customer(initial_channel, 31, 10)
-        hotel.add_customer(initial_channel, 50)
-                
-        # test 1: Try add repeated customers
-        
-        before = self.get_customer_data(hotel)
-        
-        self.assertFalse(hotel.add_group_customer(initial_channel, 27, 5)) # tail overlapping
-        self.assertFalse(hotel.add_group_customer(initial_channel, 20, 5)) # head overlapping
-        self.assertFalse(hotel.add_group_customer(initial_channel, 46, 5)) # middle overlapping
-        
-        after = self.get_customer_data(hotel)
-        
-        self.assertEqual(len(before), len(after))
-        
-        # test 2: Check for changed old customers room_no or building_id
-                
-        self.check_customer_changed_room_building(before, after)
-   
     # ===========================================
     #             test methods
     # ===========================================
@@ -336,11 +242,11 @@ class TestAddCustomer(unittest.TestCase):
     # test 6: add repeated multiple customers
     def test_add_repeated_group_customer(self):
         def action(hotel):
-            # tail overlapping (ทับ 31)
+            # tail overlapping (overlap with 31)
             self.assertFalse(hotel.add_group_customer(1, 27, 5))
-            # head overlapping (ทับ 20)
+            # head overlapping (overlap with 20)
             self.assertFalse(hotel.add_group_customer(1, 20, 5))
-            # middle overlapping (ทับ 50)
+            # middle overlapping (overlap with 50)
             self.assertFalse(hotel.add_group_customer(1, 46, 10))
 
         self.run_case_with_report(

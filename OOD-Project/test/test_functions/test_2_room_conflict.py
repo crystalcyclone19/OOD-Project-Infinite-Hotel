@@ -154,7 +154,7 @@ class TestRoomConflict(unittest.TestCase):
     #             test methods
     # ===========================================
     
-    # test 1: add c_max*n_max customers and search for repeated room_no in every room in every building.
+    # test 1: add c_max*n_max customers and search for repeated room_no.
     def test_room_no_conflict(self):
         hotel = self.set_up()
         
@@ -190,6 +190,7 @@ class TestRoomConflict(unittest.TestCase):
         
         # summary
         n_created = c_max * n_max
+        
         n_existed = len(all_customers)
         n_missing = n_created - n_existed
         passed = (n_created == n_existed)
