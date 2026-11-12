@@ -134,7 +134,7 @@ class TestSearchBuilding(unittest.TestCase):
         
         virtual_node_list.sort(key=lambda x: x.hash)
         
-        msg = f"\n{" All Virtual Nodes ":=^50}\n"
+        msg = f"\n{' All Virtual Nodes ':=^50}\n"
                 
         count = 1
         for v in virtual_node_list:
@@ -386,5 +386,3 @@ class TestSearchBuilding(unittest.TestCase):
         
 if __name__ == "__main__":
     unittest.main()
-
-
