@@ -21,7 +21,7 @@ customer_salt = "c1"
 global_test_hash = 1000
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
-RESULT_CSV_DIR = os.path.join(os.path.dirname(__file__), "result_report_csv")
+RESULT_CSV_DIR = os.path.join(BASE_DIR, "CSV", "test_functions_csv")
 TEST_SEARCH_BUILDING_CSV_DIR = os.path.join(RESULT_CSV_DIR, "test_search_building_csv")
 
 SUMMARY_HEADER = ["no.", "test_detail", "n_search", "n_found", "n_expect", "passed"]

@@ -1,6 +1,6 @@
 {
   "hash_type": "consistent",
   "V": 32,
-  "building_salt": "0",
-  "customer_salt": "0"
+  "building_salt": "b",
+  "customer_salt": "c"
 }

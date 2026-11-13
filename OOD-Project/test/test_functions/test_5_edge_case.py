@@ -24,7 +24,7 @@ from hotel_sys import HotelSystem
 SET_CSV_DIR   = os.path.join(os.path.dirname(__file__), "test_set_csv")
 CUSTOMERS_CSV = os.path.join(SET_CSV_DIR, "customers.csv")
 BUILDINGS_CSV = os.path.join(SET_CSV_DIR, "buildings_with_rooms.csv")
-RESULT_CSV_DIR = os.path.join(os.path.dirname(__file__), "result_report_csv")
+RESULT_CSV_DIR = os.path.join(BASE_DIR, "CSV", "test_functions_csv")
 OUTPUT_DIR = os.path.join(RESULT_CSV_DIR, "test_edge_case")
 
 # พารามิเตอร์ระบบ (คงที่ทุกกรณี เพื่อให้ผลทำซ้ำได้)

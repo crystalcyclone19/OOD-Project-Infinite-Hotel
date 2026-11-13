@@ -3,7 +3,7 @@ import unittest
 import csv
 import os
 
-RESULT_CSV_DIR = os.path.join(os.path.dirname(__file__), "test_functions", "result_report_csv")
+RESULT_CSV_DIR = os.path.join(os.path.dirname(__file__), "..", "CSV", "test_functions_csv")
 SUMMARY_CSV_PATH = os.path.join(RESULT_CSV_DIR, "overall_summary.csv")
 
 def write_overall_summary(result: unittest.TestResult):

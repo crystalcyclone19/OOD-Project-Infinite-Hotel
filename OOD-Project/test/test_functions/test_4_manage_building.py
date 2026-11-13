@@ -20,12 +20,12 @@ building_salt = "b1"
 customer_salt = "c1"
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
-RESULT_CSV_DIR = os.path.join(os.path.dirname(__file__), "result_report_csv")
+RESULT_CSV_DIR = os.path.join(BASE_DIR, "CSV", "test_functions_csv")
 TEST_MANAGE_BUILDING_CSV_DIR = os.path.join(RESULT_CSV_DIR, "test_manage_building_csv")
 
 BEFORE_AFTER_HEADER = ["no.", "hash", "c", "s", "building_id", "room_no_before", "building_id_after", "room_no_after", "is_affected"]
-DIFF_HEADER = ["no.", "hash", "c", "s", "building_id_before", "building_id_after", "is_affected"]
-EXAMPLE_HEADER = ["no.", "hash", "c", "s", "start_id", "after_add_4", "after_remove_2", "after_remove_3", "after_add_2"]
+DIFF_HEADER = ["no.", "hash", "c", "s", "room_no", "building_id_before", "building_id_after", "is_affected"]
+EXAMPLE_HEADER = ["no.", "hash", "c", "s", "room_no", "start_id", "after_add_4", "after_remove_2", "after_remove_3", "after_add_2"]
 SUMMARY_HEADER = ["no.", "test_detail", "target_building", "n_affected", "n_min_expected", "passed"]
 
 def write_csv(path, header, rows):
@@ -272,8 +272,8 @@ class TestManageBuilding(unittest.TestCase):
                 if is_affected:
                     n_affected += 1
 
-                # diffrence: "no.,hash,c,s,building_id_before,building_id_after,is_affected"
-                diff_rows.append([idx, c_hash, cid[0], cid[1], b_before, b_after, is_affected])
+                # diffrence: "no.,hash,c,s,room_no,building_id_before,building_id_after,is_affected"
+                diff_rows.append([idx, c_hash, cid[0], cid[1], r_before, b_before, b_after, is_affected])
 
             csv_path = os.path.join(TEST_MANAGE_BUILDING_CSV_DIR, f"{test_name}.csv")
             write_csv(csv_path, DIFF_HEADER, diff_rows)
@@ -337,7 +337,7 @@ class TestManageBuilding(unittest.TestCase):
         # 0. initial state (start)
         cust_list = []
         hotel._get_all_customers(hotel.customer_tree.root, cust_list)
-        start_state = {c.hash: (c.id, c.node_id) for c in cust_list}
+        start_state = {c.hash: (c.id, c.node_id, c.room_no) for c in cust_list}
 
         # 1. after_add_4
         self._test_manage_building(hotel, 4, command=Command.AddBuilding, expected_chagned=1)
@@ -364,16 +364,16 @@ class TestManageBuilding(unittest.TestCase):
         state_add_2 = {c.hash: c.node_id for c in cust_list_add_2}
 
         # create test_operate_building_example.csv
-        # "no.,hash,c,s,start_id, after_add_4, after_remove_2, after_remove_3, after_add_2"
+        # "no.,hash,c,s,room_no,start_id, after_add_4, after_remove_2, after_remove_3, after_add_2"
         ex_rows = []
         sorted_keys = sorted(start_state.keys())
         for idx, c_hash in enumerate(sorted_keys, start=1):
-            cid, start_id = start_state[c_hash]
+            cid, start_id, room_no = start_state[c_hash]
             after_4 = state_add_4[c_hash]
             after_2 = state_rem_2[c_hash]
             after_3 = state_rem_3[c_hash]
             after_add2_id = state_add_2[c_hash]
-            ex_rows.append([idx, c_hash, cid[0], cid[1], start_id, after_4, after_2, after_3, after_add2_id])
+            ex_rows.append([idx, c_hash, cid[0], cid[1], room_no, start_id, after_4, after_2, after_3, after_add2_id])
 
         example_csv_path = os.path.join(TEST_MANAGE_BUILDING_CSV_DIR, "test_operate_building_example.csv")
         write_csv(example_csv_path, EXAMPLE_HEADER, ex_rows)

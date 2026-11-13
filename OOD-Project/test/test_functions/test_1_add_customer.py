@@ -16,7 +16,7 @@ building_salt = "b1"
 customer_salt = "c1"
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
-RESULT_CSV_DIR = os.path.join(os.path.dirname(__file__), os.path.join("result_report_csv", "test_add_customer_csv"))
+RESULT_CSV_DIR = os.path.join(BASE_DIR, "CSV", "test_functions_csv", "test_add_customer_csv")
 TEST_ADD_CUSTOMER_CSV_DIR = RESULT_CSV_DIR
 
 CUSTOMER_HEADER = ["no.", "hash", "c", "s", "building_id", "room_no"]
