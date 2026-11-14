@@ -59,9 +59,16 @@ def write_overall_summary(result: unittest.TestResult):
 
 
 if __name__ == '__main__':
+    base_test_dir = os.path.dirname(os.path.abspath(__file__))
+    test_functions_dir = os.path.join(base_test_dir, 'test_functions')
+    project_root = os.path.abspath(os.path.join(base_test_dir, '..'))
+
+    if project_root not in sys.path:
+        sys.path.insert(0, project_root)
+
     test_loader = unittest.defaultTestLoader
     test_suite  = test_loader.discover(
-        start_dir='test/test_functions', pattern='test_*.py')
+        start_dir=test_functions_dir, pattern='test_*.py')
 
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(test_suite)

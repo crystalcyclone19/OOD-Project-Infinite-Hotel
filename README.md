@@ -16,8 +16,9 @@
 ## 🛠 ข้อกำหนดเบื้องต้นและการติดตั้ง
 
 1. **Python:** ภาษา Python เวอร์ชัน 3.9 ขึ้นไป
-2. **การติดตั้ง Dependencies:** (รันที่โฟลเดอร์ `OOD-Project-Infinite-Hotel/`)
+2. **การติดตั้ง Dependencies:** (รันที่โฟลเดอร์โปรเจกต์หลัก `OOD-Project-Infinite-Hotel/`)
    ```bash
+   cd OOD-Project-Infinite-Hotel
    pip install -r requirements.txt
    ```
 
@@ -26,87 +27,98 @@
 ## โครงสร้างโฟลเดอร์ที่สำคัญ
 
 ```text
-OOD-Project-Infinite-Hotel/
-├── README.md
-├── requirements.txt
-└── OOD-Project/                       # โฟลเดอร์หลักของโปรเจกต์ (รันคำสั่งทั้งหมดจากที่นี่)
-    ├── app.py                         # โปรแกรมหลัก (Text UI)
+OOD-Project-Infinite-Hotel/            # โฟลเดอร์โปรเจกต์หลักที่รวมทุกอย่างไว้ด้านใน
+├── README.md                          # เอกสารภาพรวมและวิธีการรันระบบ/การทดสอบ
+├── manual.md                          # คู่มือการใช้งาน Interactive CLI (app.py) อย่างละเอียด
+├── requirements.txt                   # รายการไลบรารีที่จำเป็น
+└── OOD-Project/                       # โฟลเดอร์ซอร์สโค้ดหลัก
+    ├── app.py                         # โปรแกรมหลัก (Interactive CLI / Text UI)
     ├── hotel_sys.py                   # คลาสหลักของระบบ: HotelSystem, Customer, BuildingWithRoom, MovedCustomer
     ├── HashRing.py                    # HashHelper, VirtualNode, HashRing (Consistent Hashing), HashModN
     ├── AVLTree.py                     # AVLTree (AVLNormalTree, AVLClassTree) ใช้เก็บข้อมูลเรียงลำดับ
-    ├── data/                          # ข้อมูลที่ app.py โหลด/บันทึก
+    ├── data/                          # ข้อมูลที่ app.py โหลด/บันทึก (สร้างอัตโนมัติ)
     │   ├── config.json                # ค่า hash_type, V, salt ของอาคารและแขก
     │   ├── buildings.csv              # รหัสอาคาร เรียงตามลำดับที่เพิ่ม
     │   └── guests.csv                 # channel_id, sequence_id, node_id, room_no
-    ├── util/                          # ฟังก์ชันช่วยเหลือ
+    ├── util/                          # ฟังก์ชันช่วยเหลือและคำนวณ
     │   ├── csv_sys.py                 # อ่าน/เขียนไฟล์ CSV
-    │   ├── graph.py                   # สร้างกราฟ
-    │   ├── timer.py                   # จับเวลา
+    │   ├── graph.py                   # สร้างกราฟผลลัพธ์
+    │   ├── timer.py                   # จับเวลาการทำงาน
     │   ├── memory_usage.py            # วัดการใช้หน่วยความจำ
-    │   ├── math.py                    # ฟังก์ชันคำนวณ (ค่ามัธยฐาน ความแปรปรวน การ fit โมเดล)
-    │   └── color.py                   # สีสำหรับแสดงผลบน Terminal
-    ├── graph/                         # รูปกราฟผลลัพธ์
+    │   ├── math.py                    # ฟังก์ชันคำนวณ (ค่ามัธยฐาน, ความแปรปรวน, Regression)
+    │   └── color.py                   # แสดงผลข้อความสีบน Terminal
+    ├── graph/                         # รูปกราฟผลลัพธ์จากการทดสอบ
     │   ├── test_A/                    # กราฟ Test A (แยก consistant_hashing/ และ hash_mod_n/)
     │   └── GRAPH_TestB/               # กราฟ Test B
     ├── CSV/                           # ไฟล์ CSV ผลลัพธ์
     │   ├── test_A/                    # CSV Test A (แยก consistant_hashing/ และ hash_mod_n/)
     │   ├── CSV_TestB/                 # CSV Test B
     │   ├── app_output/                # CSV ที่ app.py ส่งออก (เช่น รายการแขกที่ถูกย้าย)
-    │   └── test_C_results.csv         # CSV Test C
-    └── test/                          # Script สำหรับรันการทดสอบ
-        ├── test_A.py                  # Test A
-        ├── test_B/
-        │   ├── test_B.py              # Test B
+    │   ├── test_C_results.csv         # CSV ผลลัพธ์ Test C
+    │   ├── test_parameter_ref.md      # เอกสารอ้างอิงพารามิเตอร์การทดสอบ
+    │   └── test_functions_csv/        # รายงานผลลัพธ์ Unit Test ทั้งหมด
+    │       ├── overall_summary.csv    # สรุปภาพรวมผลการรัน Unit Test ทุกชุด
+    │       ├── test_add_customer_csv/
+    │       ├── test_room_conflict_csv/
+    │       ├── test_search_building_csv/
+    │       ├── test_manage_building_csv/
+    │       └── test_edge_case/
+    └── test/                          # ชุดทดสอบและสคริปต์การทดสอบ
+        ├── test_A.py                  # สคริปต์การทดสอบ Test A (ประสิทธิภาพ 3 รอบ)
+        ├── test_B/                    # สคริปต์และข้อมูลจำลอง Test B (Rebalance)
+        │   ├── test_B.py              # สคริปต์หลัก Test B
         │   ├── generate_mock_data_csv.py   # สร้างข้อมูลจำลอง
         │   ├── load_data_to_system.py      # โหลดข้อมูลเข้าระบบ
-        │   ├── buildings.csv          # ข้อมูลอาคารจำลองที่สร้างขึ้น
-        │   └── guests.csv             # ข้อมูลแขกจำลองที่สร้างขึ้น
-        ├── test_C.py                  # Test C
-        ├── test_all_functions.py      # ตัวรัน Unit Test ทั้งหมด + สรุปผลเป็น overall_summary.csv
-        └── test_functions/            # ชุด Unit Test สำหรับทดสอบแต่ละฟังก์ชัน
-            ├── test_1_add_customer.py
-            ├── test_2_room_conflict.py
-            ├── test_3_search_building.py
-            ├── test_4_manage_building.py
-            ├── test_5_edge_case.py
-            ├── test_set_csv/          # ข้อมูลตั้งต้น (buildings_with_rooms.csv, customers.csv)
-            ├── result_report_csv/     # รายงานผลการทดสอบ (CSV) ของแต่ละชุด + overall_summary.csv
-            └── test_list.md           # รายการทดสอบขั้นต่ำตามโจทย์
+        │   ├── buildings.csv          # ข้อมูลอาคารจำลอง
+        │   └── guests.csv             # ข้อมูลแขกจำลอง
+        ├── test_C.py                  # สคริปต์การทดสอบ Test C (Load Balancing & CV)
+        ├── test_all_functions.py      # สคริปต์รัน Unit Test ทั้งหมด พร้อมสรุปผล
+        └── test_functions/            # ชุด Unit Test ทดสอบฟังก์ชันแต่ละส่วน (9.2)
+            ├── test_1_add_customer.py     # ทดสอบเพิ่มแขก/จัดสรรห้อง
+            ├── test_2_room_conflict.py    # ทดสอบ Cantor Pairing Function & ตรวจจับห้องชน
+            ├── test_3_search_building.py  # ทดสอบการค้นหาอาคารบนวงแหวน
+            ├── test_4_manage_building.py  # ทดสอบการเพิ่ม/ลบอาคารแบบ dynamic
+            ├── test_5_edge_case.py        # ทดสอบกรณีขอบเขต (Edge Cases ตามข้อ 4.5)
+            ├── test_set_csv/              # ข้อมูลตั้งต้นสำหรับทดสอบ (buildings, customers)
+            └── test_list.md               # รายการทดสอบขั้นต่ำตามข้อกำหนด
 ```
 
 ---
 
 ## การรันโปรแกรมหลัก
 
-โปรแกรมหลักเป็น Text UI ในไฟล์ `app.py` รันจากโฟลเดอร์ `OOD-Project`
+โปรแกรมหลักเป็น Interactive CLI / Text UI ในไฟล์ `app.py` สามารถรันได้โดย `cd` เข้าผ่าน `OOD-Project-Infinite-Hotel`:
 
 ```bash
 cd OOD-Project-Infinite-Hotel/OOD-Project
 python app.py
 ```
 
-- ตอนเปิดโปรแกรม จะโหลดข้อมูลจากโฟลเดอร์ `data/` (`config.json`, `buildings.csv`, `guests.csv`)
-- ข้อมูลหลักอยู่ในหน่วยความจำ ส่วนไฟล์ใน `data/` เป็นสำเนาที่บันทึกไว้ และจะถูกบันทึกใหม่หลังทุกคำสั่งที่เปลี่ยนข้อมูล
-- ไฟล์ CSV ที่ส่งออกจากโปรแกรม (เช่น รายการแขกที่ถูกย้าย) อยู่ใน `CSV/app_output/`
-- ค่าตั้งต้นของระบบ (`hash_type`, `V`, salt ของอาคารและแขก) แก้ได้ที่ `data/config.json`
+หรือหากอยู่ที่โฟลเดอร์ `OOD-Project-Infinite-Hotel/`:
+```bash
+python OOD-Project/app.py
+```
 
+- **การโหลดข้อมูล:** ตอนเริ่มโปรแกรม หากมีข้อมูลเดิมใน `data/` (`config.json`, `buildings.csv`, `guests.csv`) ระบบจะถามว่าต้องการโหลดหรือไม่ หากเลือกไม่โหลด จะเข้าสู่ขั้นตอนตั้งค่าระบบใหม่ (เลือก Hash Type, V, จำนวนอาคารเริ่มต้น, Salt ฯลฯ)
+- **การบันทึกข้อมูล:** ข้อมูลหลักทำงานบนหน่วยความจำ และมีการซิงค์บันทึกลง `data/` อัตโนมัติเมื่อเกิดการเปลี่ยนแปลง
+- **การส่งออก CSV:** ไฟล์ CSV ที่ export จากโปรแกรม (เช่น รายการแขกที่ถูกย้ายเมื่อเพิ่ม/ลบอาคาร) จะถูกเก็บไว้ใน `CSV/app_output/`
+- **คู่มือการใช้งานแบบละเอียด:** ศึกษาเมนู คำสั่ง และตัวอย่างการใช้งานทั้งหมดได้ที่ [manual.md](manual.md)
 
 ---
 
 ## System & Algorithm Tests
 
-การทดสอบประสิทธิภาพเชิงเปรียบเทียบระหว่าง Consistent Hashing และ Hash Mod N ในสถานการณ์ต่างๆ ตามโจทย์ข้อ 7
-ในการรันฟังก์ชันต่างๆ ต้องเข้าไปที่โฟลเดอร์ `OOD-Project` ก่อน จึงจะสามารถรันด้วย Command ด้านล่างได้
+การทดสอบประสิทธิภาพเชิงเปรียบเทียบระหว่าง Consistent Hashing และ Hash Mod N ในมิติต่างๆ ตามโจทย์ข้อ 7  
+> **ข้อแนะนำ:** การรันคำสั่งทั้งหมดต้องเข้าไปที่โฟลเดอร์ `OOD-Project` ผ่าน `OOD-Project-Infinite-Hotel`:
+> ```bash
+> cd OOD-Project-Infinite-Hotel/OOD-Project
+> ```
 
-```bash
-cd OOD-Project-Infinite-Hotel/OOD-Project
-```
-
-| ชุดการทดสอบ | คำสั่ง (Command) | ผลลัพธ์และสิ่งที่ระบบแสดงผล (Output) |
-| :--- | :--- | :--- |
-| **Test A** | `python -m test.test_A` | แสดงสถานะบน Terminal สร้างรูปกราฟ 12 ภาพ (อัลกอริทึมละ 6 ภาพ) ในโฟลเดอร์ `graph/test_A/` และไฟล์ CSV ในโฟลเดอร์ `CSV/test_A/` |
-| **Test B** | `python -m test.test_B.test_B` | แสดงสถานะและผลลัพธ์บน Terminal พร้อมเปิดหน้าต่าง Pop-up แสดงกราฟเปรียบเทียบ สร้างรูปกราฟ 6 ภาพในโฟลเดอร์ `graph/GRAPH_TestB/` และไฟล์ CSV ในโฟลเดอร์ `CSV/CSV_TestB/` |
-| **Test C** | `python -m test.test_C` | แสดงสถานะและผลลัพธ์บน Terminal พร้อมเปิดหน้าต่าง Pop-up แสดงกราฟเปรียบเทียบ และไฟล์ CSV ในโฟลเดอร์ `CSV/` |
+| ชุดการทดสอบ | คำสั่ง (Command)                  | ผลลัพธ์และสิ่งที่ระบบแสดงผล (Output)                                                                                                                             |
+| :--------- | :----------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Test A** | `python -m test.test_A`        | แสดงสถานะบน Terminal สร้างรูปกราฟ 12 ภาพ (อัลกอริทึมละ 6 ภาพ) ในโฟลเดอร์ `graph/test_A/` และไฟล์ CSV ในโฟลเดอร์ `CSV/test_A/`                                      |
+| **Test B** | `python -m test.test_B.test_B` | แสดงสถานะและ progress bar บน Terminal พร้อมหน้าต่าง Pop-up กราฟเปรียบเทียบ สร้างรูปกราฟ 6 ภาพในโฟลเดอร์ `graph/GRAPH_TestB/` และไฟล์ CSV ในโฟลเดอร์ `CSV/CSV_TestB/` |
+| **Test C** | `python -m test.test_C`        | แสดงสถานะและผลลัพธ์บน Terminal พร้อมหน้าต่าง Pop-up แสดงกราฟเปรียบเทียบ และบันทึกไฟล์สรุปใน `CSV/test_C_results.csv`                                                  |
 
 ### รายละเอียดผลลัพธ์ Test A
 
@@ -168,22 +180,48 @@ Test C บันทึกผลลัพธ์เฉพาะ CSV : `CSV/test_C_
 
 ## Unit Tests & Function Verification
 
-การทดสอบฟังก์ชันการทำงานพื้นฐาน การจัดการข้อมูล และการรองรับกรณีขอบเขต (Edge Cases) ตามโจทย์ข้อ 9.2
+การทดสอบฟังก์ชันการทำงานพื้นฐาน การจัดการข้อมูล และการรองรับกรณีขอบเขต (Edge Cases) ตามข้อกำหนดโจทย์ 9.2
 
-### คำสั่งสำหรับรันการทดสอบ Unit Test ทั้งหมด:
-รันจากโฟลเดอร์ `OOD-Project` (สคริปต์ค้นหาไฟล์ `test_*.py` ใน `test/test_functions` จาก path สัมพัทธ์)
-```bash
-python test/test_all_functions.py
-```
-ผลลัพธ์: สรุปจำนวนที่ผ่าน/ไม่ผ่านบน Terminal และบันทึกเป็น `test/test_functions/result_report_csv/overall_summary.csv`
-พร้อมรายงานของแต่ละชุดทดสอบในโฟลเดอร์ `result_report_csv/` เดียวกัน
+### วิธีการรัน Unit Test ทั้งหมด:
+
+สามารถรันสคริปต์ `test_all_functions.py` ได้ทั้งจากโฟลเดอร์หลักและโฟลเดอร์ `OOD-Project/`:
+
+- **รันจากโฟลเดอร์โปรเจกต์หลัก (`OOD-Project-Infinite-Hotel/`):**
+  ```bash
+  python OOD-Project/test/test_all_functions.py
+  ```
+
+- **หรือ cd เข้าไปที่ `OOD-Project/` ผ่าน `OOD-Project-Infinite-Hotel`:**
+  ```bash
+  cd OOD-Project-Infinite-Hotel/OOD-Project
+  python test/test_all_functions.py
+  ```
+
+- **หรือรันผ่าน `unittest discover` ใน `OOD-Project/`:**
+  ```bash
+  cd OOD-Project-Infinite-Hotel/OOD-Project
+  python -m unittest discover -s test/test_functions -p "test_*.py"
+  ```
+
+**ผลลัพธ์การทดสอบ:**
+- แสดงตารางสรุปจำนวน Test Case ที่รัน ทั้งหมด ผ่าน, ไม่ผ่าน, ข้อผิดพลาด (Passed / Failed / Errors) ทาง Terminal
+- บันทึกผลสรุปภาพรวมลงไฟล์ CSV ที่:
+  `OOD-Project/CSV/test_functions_csv/overall_summary.csv`
+- บันทึกไฟล์ CSV ผลการทดสอบโดยละเอียดของแต่ละโมดูลแยกโฟลเดอร์ใน `OOD-Project/CSV/test_functions_csv/`
+
+---
 
 ### รายละเอียดชุดการทดสอบย่อย (Test Modules):
-1. **`test_1_add_customer.py`**: ทดสอบระบบการเพิ่มลูกค้าและการจัดสรรห้องพักตามอัลกอริทึม
-2. **`test_2_room_conflict.py`**: ทดสอบการจัดการกรณีห้องพักเกิดข้อขัดแย้ง/ชนกัน (Collision Handling)
-3. **`test_3_search_building.py`**: ทดสอบฟังก์ชันการค้นหาอาคารและตรวจสอบตำแหน่งห้องพักของลูกค้า
-4. **`test_4_manage_building.py`**: ทดสอบระบบการจัดการอาคาร การเพิ่มและลดอาคารแบบ dynamic
-5. **`test_5_edge_case.py`**: ทดสอบกรณีขอบเขต ข้อมูลไม่สมบูรณ์ หรือกรณีข้อยกเว้นต่างๆ (Exception & Edge Cases)
+
+สามารถแยกรันแต่ละไฟล์เดี่ยวๆ ได้ตามต้องการ (โดย cd เข้าไปที่ `OOD-Project-Infinite-Hotel/OOD-Project`):
+
+| ไฟล์ทดสอบ                        | คำสั่งรันเดี่ยว (ใน `OOD-Project/`)                          | รายละเอียดและสิ่งที่ทดสอบ                                                                      | โฟลเดอร์ CSV ผลลัพธ์                                  |
+| :------------------------------ | :----------------------------------------------------- | :---------------------------------------------------------------------------------------- | :------------------------------------------------- |
+| **`test_1_add_customer.py`**    | `python test/test_functions/test_1_add_customer.py`    | ทดสอบเพิ่มแขกเดี่ยว/กลุ่ม ทั้งช่องทางเดิมและใหม่ พร้อมยืนยันว่าแขกเดิมไม่ถูกเปลี่ยนห้อง                        | `CSV/test_functions_csv/test_add_customer_csv/`    |
+| **`test_2_room_conflict.py`**   | `python test/test_functions/test_2_room_conflict.py`   | ทดสอบสมการ Cantor Pairing Function ตรวจสอบว่า c และ s ต่างกันจะไม่ได้เลขห้องซ้ำกัน                 | `CSV/test_functions_csv/test_room_conflict_csv/`   |
+| **`test_3_search_building.py`** | `python test/test_functions/test_3_search_building.py` | ทดสอบค้นหาอาคารตรงจุดพอดี ระหว่างจุด และกรณีวนลูปกลับจุดเริ่มต้นของวงแหวน                             | `CSV/test_functions_csv/test_search_building_csv/` |
+| **`test_4_manage_building.py`** | `python test/test_functions/test_4_manage_building.py` | ทดสอบการเพิ่ม/ลบอาคารขณะ V > 1 ตรวจสอบความถูกต้องของการย้ายแขกและยอดแขกรวม                     | `CSV/test_functions_csv/test_manage_building_csv/` |
+| **`test_5_edge_case.py`**       | `python test/test_functions/test_5_edge_case.py`       | ทดสอบกรณีขอบเขต (Edge Cases ตามข้อ 4.5 ทั้งหมด 9 กรณี) เช่น อาคารซ้ำ, ลบอาคารไม่พบ, input ติดลบ/ศูนย์ | `CSV/test_functions_csv/test_edge_case/`           |
 
 
 
