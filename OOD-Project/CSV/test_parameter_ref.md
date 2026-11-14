@@ -24,5 +24,5 @@
 
 5. CSV\app_output\
 
-- ผลลัพท์จาก \app.py
+- ผลลัพท์จากการใช้งาน Application ของ app.py
 
